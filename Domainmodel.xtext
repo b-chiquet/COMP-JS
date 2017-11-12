@@ -1,0 +1,195 @@
+grammar org.example.domainmodel.Domainmodel with org.eclipse.xtext.common.Terminals
+
+generate domainmodel "http://www.example.org/domainmodel/Domainmodel"
+
+/* ------------------- GRAMMAIRE PLUS POUSSEE ------------------------------- */
+PROGRAM :
+	func=FUNCTION ("CR" prog=PROGRAM)?
+;
+
+FUNCTION :
+	"function" name=ID ":" def=DEFINITION
+;
+  
+DEFINITION :
+	("read" inputs=INPUTS)
+	("%" code=CODE)
+	("%" "write" outputs=OUTPUTS)
+;  
+
+INPUTS:
+	input=VARIABLE ("," inputs=INPUTS)?
+;
+
+OUTPUTS:
+	output=VARIABLE ("," outputs=OUTPUTS)?
+;
+
+CODE:
+	(commandes+=COMMAND)*
+;
+
+
+/* --  -- */
+COMPARATOR : 
+	comp=("==" |"!=" | "<" | ">" | "<=" | ">=")
+;
+
+OPERATOR :
+	op=('+' | '-' | '*' | '/')
+;
+
+
+/* -- COMMANDES -- */
+COMMAND : 
+	(IF | WHILE | FOR | AFFECT | FOREACH | NOP) (";" commandes=COMMAND)?
+;
+
+NOP:
+	nop="nop"
+;
+
+IF :
+	"if" EXPRESSION "then" (commandes=COMMAND)* ("else" (commandes=COMMAND)*)? "fi"
+;
+
+WHILE :
+	"while" EXPRESSION "do" (commandes=COMMAND)* "od"
+;
+
+FOR :
+	"for" EXPRESSION "do" (commandes=COMMAND)* "od"
+;
+
+FOREACH:
+	"foreach" exp1=EXPRESSION "in" exp2=EXPRESSION "do" (commandes=COMMAND)* "od"
+;
+
+AFFECT:
+	var+=VARIABLE ("," vars+=VARIABLE)* ":=" val=EXPRESSION ("," vals+=EXPRESSION)*
+;
+
+
+/* -- EXPRESSIONS -- */
+EXPRESSION : 
+	expr= "expression_simple" | "expression_logique" | "nil" | VARIABLE | SYMBOLE | NOMBRE
+;
+/*
+EXPRESSION : 
+	expr= EXPRSIMPLE | EXPRLOGIQUE
+;
+
+EXPRLOGIQUE:
+	EXPROR
+;
+
+EXPROR:
+	EXPRAND ('or' and+=EXPRAND)*
+;
+
+EXPRAND:
+	EXPREQ ('and' eq+=EXPREQ)*
+;
+
+EXPREQ:
+	EXPRSIMPLE '=?' exp=EXPRSIMPLE | '(' EXPRESSION ')'
+;
+
+
+EXPRSIMPLE:
+	exp = "nil" | VARIABLE | SYMBOLE | 
+	'(' (('cons'|'list') LEXPR) | 
+	(('hd'|'tl') EXPRESSION) | 
+	(SYMBOLE LEXPR) ')'
+;
+
+LEXPR:
+	expr= EXPRESSION lexpr=LEXPR?
+;
+*/
+
+/* -- DONNEES -- */
+terminal VARIABLE :
+	('A'..'Z')(('0'..'9')('A'..'Z')('a'..'z'))*
+;
+
+terminal SYMBOLE :
+	('a'..'z')(('0'..'9')('A'..'Z')('a'..'z'))*
+;
+
+terminal NOMBRE :
+	('1'..'9')('0'..'9')*
+;
+/* -------------------------------------------------------------------- */
+
+
+
+
+/* --------------------- GRAMMAIRE PRIMITIVE ----------------------- 
+Domainmodel :
+	(commands += COMMAND)*
+;
+
+FUNCTION :
+	"function " name=ID ":" def=DEFINITION
+;
+  
+DEFINITION :
+	("read " inputs=INPUTS)
+	("%" code=CODE "%")
+	("write " outputs=OUTPUTS)
+;  
+
+INPUTS:
+	"variables entree"
+;
+
+CODE:
+	(commandes+=COMMAND)*
+;
+
+OUTPUTS:
+	"variables sortie"
+;
+  
+COMMAND : 
+	(IF | WHILE | FOR | AFFECT | FUNCTION)
+;
+
+IF :
+	"if" CONDITION "then commandes fi"
+;
+
+CONDITION :
+	"condition"
+;
+
+
+COMPARATOR : 
+	comp=("==" |"!=")
+;
+
+WHILE :
+	"while" CONDITION "do commandes od"
+;
+
+FOR :
+	"for" EXPRESSION "do commandes od"
+;
+
+FOREACH:
+	"foreach VAR in E do commandes od" 
+;
+
+AFFECT:
+	VAR ":=" (val=EXPRESSION|"nil")
+;
+
+EXPRESSION : 
+	exp="expression"
+;
+
+VAR :
+	var=ID
+;
+------------------------------------------------------------------- */
