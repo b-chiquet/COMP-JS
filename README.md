@@ -49,6 +49,7 @@ Voila =) Ask Basile ou Antoine si besoin.
 
 
 ******** **Installation du projet Xtext sur Eclipse ** ******************
+
 Pour installer le projet correctement :
 Télécharger Eclipse et le plugin xtext.
 Créer un nouveau projet xtext appelé "org.xtext.example.projet", avec comme extension ".wh"
