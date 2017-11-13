@@ -1,0 +1,225 @@
+grammar org.xtext.example.Projet with org.eclipse.xtext.common.Terminals
+
+generate projet "http://www.xtext.org/example/Projet"
+
+/*
+
+// ------------------- GRAMMAIRE PLUS POUSSEE ------------------------------- //
+PROGRAM :
+	func=FUNCTION ("CR" prog=PROGRAM)?
+;
+
+FUNCTION :
+	"function" name=ID ":" def=DEFINITION
+;
+  
+DEFINITION :
+	("read" inputs=INPUTS)
+	("%" code=CODE)
+	("%" "write" outputs=OUTPUTS)
+;  
+
+INPUTS:
+	input=VARIABLE ("," inputs=INPUTS)?
+;
+
+OUTPUTS:
+	output=VARIABLE ("," outputs=OUTPUTS)?
+;
+
+CODE:
+	(commandes+=COMMAND)*
+;
+
+
+COMPARATOR : 
+	comp=("==" |"!=" | "<" | ">" | "<=" | ">=")
+;
+
+OPERATOR :
+	op=('+' | '-' | '*' | '/')
+;
+
+
+// -- COMMANDES -- 
+COMMAND : 
+	(IF | WHILE | FOR | AFFECT | FOREACH | NOP) (";" commandes=COMMAND)?
+;
+
+NOP:
+	nop="nop"
+;
+
+IF :
+	"if" EXPRESSION "then" (commandes=COMMAND)* ("else" (commandes=COMMAND)*)? "fi"
+;
+
+WHILE :
+	"while" EXPRESSION "do" (commandes=COMMAND)* "od"
+;
+
+FOR :
+	"for" EXPRESSION "do" (commandes=COMMAND)* "od"
+;
+
+FOREACH:
+	"foreach" exp1=EXPRESSION "in" exp2=EXPRESSION "do" (commandes=COMMAND)* "od"
+;
+
+AFFECT:
+	var+=VARIABLE ("," vars+=VARIABLE)* ":=" val=EXPRESSION ("," vals+=EXPRESSION)*
+;
+
+
+// -- EXPRESSIONS -- 
+EXPRESSION : 
+	expr= "expression_simple" | "expression_logique" | "nil" | VARIABLE | SYMBOLE | NOMBRE
+;
+
+EXPRESSION : 
+	expr= EXPRSIMPLE | EXPRLOGIQUE
+;
+
+EXPRLOGIQUE:
+	EXPROR
+;
+
+EXPROR:
+	EXPRAND ('or' and+=EXPRAND)*
+;
+
+EXPRAND:
+	EXPREQ ('and' eq+=EXPREQ)*
+;
+
+EXPREQ:
+	EXPRSIMPLE '=?' exp=EXPRSIMPLE | '(' EXPRESSION ')'
+;
+
+
+EXPRSIMPLE:
+	exp = "nil" | VARIABLE | SYMBOLE | 
+	'(' (('cons'|'list') LEXPR) | 
+	(('hd'|'tl') EXPRESSION) | 
+	(SYMBOLE LEXPR) ')'
+;
+
+LEXPR:
+	expr= EXPRESSION lexpr=LEXPR?
+;
+
+
+// -- DONNEES -- 
+terminal VARIABLE :
+	('A'..'Z')(('0'..'9')('A'..'Z')('a'..'z'))*
+;
+
+terminal SYMBOLE :
+	('a'..'z')(('0'..'9')('A'..'Z')('a'..'z'))*
+;
+
+terminal NOMBRE :
+	('1'..'9')('0'..'9')*
+;
+//-------------------------------------------------------------------- 
+
+
+*/
+
+/* --------------------- GRAMMAIRE PRIMITIVE ----------------------- */
+Domainmodel :
+	(functions += FUNCTION)*
+;
+
+FUNCTION :
+	"function " name=NAME ":" def=DEFINITION
+;
+  
+DEFINITION :
+	("read " inputs=INPUTS)
+	("%" code=COMMANDS "%")
+	("write " outputs=OUTPUTS)
+;  
+
+INPUTS:
+	input="variables entree"
+;
+
+
+OUTPUTS:
+	output="variables sortie"
+;
+  
+COMMANDS : // Plusieurs commandes d'affilé, séparées d'un ;
+	command=COMMAND (';' commands+=COMMAND)*
+;
+
+COMMAND : 
+	command= IF |
+	command = NOP |
+	command = AFFECT |
+	command = FOR |
+	command = WHILE | 
+	command = FOREACH
+;
+
+// LES DIFFERENTES COMMANDES
+
+
+IF:
+	('if' cond=CONDITION 'then' comm=COMMANDS (=>'else' commands2=COMMANDS)? 'fi') 	
+;
+
+
+NOP:
+	nop = "nop"
+;
+
+AFFECT :
+	affect=VARIABLE ":= valeur"
+;
+
+FOR :
+	"for" exp=EXPRESSION "do" commands+=COMMANDS "od"
+;
+
+WHILE :
+	("while" CONDITION "do" commands=COMMANDS "od")
+;
+
+FOREACH : 
+	("foreach" exp=EXPRESSION "in" exp=EXPRESSION "do" commands=COMMANDS "od")
+;
+
+CONDITION :
+	"condition"
+;
+
+
+COMPARATOR : 
+	comp=("==" |"!=")
+;
+
+EXPRESSION : 
+	exp="expression"
+;
+
+VAR :
+	var=ID
+;
+
+// TERMINAUX
+terminal VARIABLE:
+	'A'..'Z'('A'..'Z'|'a'..'z')*
+;
+	
+terminal NAME:
+	'a'..'z'('A'..'Z'|'a'..'z'|'0'..'9')*
+	((('-'|'+'|'.'|'/'|'_'|'&')|"->")('A'..'Z'|'a'..'z'|'0'..'9')+)*
+	//('!'|'?')?
+;
+
+terminal NUMBER:
+	('1'..'9')('0'..'9')*
+;
+/*------------------------------------------------------------------- */

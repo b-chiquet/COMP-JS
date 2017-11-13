@@ -1,0 +1,33 @@
+function test :
+	read X, Y
+	%
+		nop
+		
+		X:=nil;Y:=nil;
+		X,Y,Z := Y,Z,nil
+		
+		if expression_simple 
+		then
+			X:=expression_simple
+		fi
+		
+		while expression_logique 
+		do 
+			
+		od
+		
+		if expression_logique
+		then	
+		 
+		else 
+		
+		fi
+		
+		for expression_simple 
+		do
+		
+		od
+		
+		X:=12
+	% 
+	write X
