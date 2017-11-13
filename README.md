@@ -20,4 +20,7 @@ Ensuite, on modifie "Main.java" afin d'avoir un parser plus complet.
 Après avoir run le main une fois, on peut exporter le projet "org.xtext.example.projet" en .jar avec clic droit -> export -> Runnable JAR File  
 ![alt text](export_jar.png)  
 Ce jar peut ensuite être utilisé comme parser :   
-![alt text](cmd_jar.png)
+![alt text](cmd_jar.png)  
+
+Sont également disponibles sur le repo le runnable JAR "projet.jar", et les deux fichiers "right.wh" et "wrong.wh" qui sont respectivement corrects et incorrects afin de pouvoir les tester.  
+
