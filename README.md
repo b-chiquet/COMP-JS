@@ -3,6 +3,50 @@
 Ceci est le README du projet. Il faut y mettre toutes les infos concernant l'installation et l'utilisation du Compilateur.
 Feel free to add more ;)
 
+************************* COMMENT UTILISER GIT *************************
+
+Pour ceux qui ont du mal avec GIT, tuto pour l'utiliser en **lignes de commandes**, je connais pas les interfaces et utilitaires. 
+
+
+Pour télécharger le projet dans un premier temps : 
+
+git clone https://github.com/AcidBaz/COMP-JS.git
+
+cela va créér le dossier de projet.
+
+Avant de faire des modifs, vérifiez que vous êtes à jour avec la branche principale, master avec : 
+
+git status 
+
+si vous ne l'êtes pas : 
+
+git pull 
+
+Une fois vos modifications terminées : 
+
+git status 
+
+pour voir les modifs.
+
+Si vous avez créé des nouveaux fichiers il faut les ajouter avec :
+
+git add "fichier"
+
+Si vous en avez supprimé :
+
+git rm "fichier"
+
+Ensuite il faut commit vos changements avec un petit message explicatif :
+
+git commit -m "votre message"
+
+Enfin, il faut push sur le repertoire en ligne afin que tout le monde puisse accèder à vos modifs ( **NE JAMAIS PUSH SANS ETRE A JOUR** ) : 
+
+git push 
+
+
+Voila =) Ask Basile ou Antoine si besoin.
+
 Pour installer le projet correctement :
 Télécharger Eclipse et le plugin xtext.
 Créer un nouveau projet xtext appelé "org.xtext.example.projet", avec comme extension ".wh"
