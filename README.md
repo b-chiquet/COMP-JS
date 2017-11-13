@@ -48,7 +48,7 @@ git push
 Voila =) Ask Basile ou Antoine si besoin.
 
 
-******** **Installation du projet Xtext sur Eclipse ** ******************
+******** **Installation du projet Xtext sur Eclipse** ******************
 
 Pour installer le projet correctement :
 Télécharger Eclipse et le plugin xtext.
