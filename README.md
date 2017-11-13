@@ -3,7 +3,7 @@
 Ceci est le README du projet. Il faut y mettre toutes les infos concernant l'installation et l'utilisation du Compilateur.
 Feel free to add more ;)
 
-************************* COMMENT UTILISER GIT *************************
+*********************** **COMMENT UTILISER GIT** ***********************
 
 Pour ceux qui ont du mal avec GIT, tuto pour l'utiliser en **lignes de commandes**, je connais pas les interfaces et utilitaires. 
 
@@ -47,6 +47,8 @@ git push
 
 Voila =) Ask Basile ou Antoine si besoin.
 
+
+******** **Installation du projet Xtext sur Eclipse ** ******************
 Pour installer le projet correctement :
 Télécharger Eclipse et le plugin xtext.
 Créer un nouveau projet xtext appelé "org.xtext.example.projet", avec comme extension ".wh"
