@@ -3,7 +3,7 @@
 Ceci est le README du projet. Il faut y mettre toutes les infos concernant l'installation et l'utilisation du Compilateur.
 Feel free to add more ;)
 
-*********************** **COMMENT UTILISER GIT** ***********************
+## COMMENT UTILISER GIT
 
 Pour ceux qui ont du mal avec GIT, tuto pour l'utiliser en **lignes de commandes**, je connais pas les interfaces et utilitaires. 
 
@@ -36,7 +36,7 @@ Enfin, il faut push sur le repertoire en ligne afin que tout le monde puisse acc
 
 Voila =) Ask Basile ou Antoine si besoin.
 
-******** **Installation du projet Xtext sur Eclipse** ******************
+## Installation du projet Xtext sur Eclipse
 
 Pour installer le projet correctement :
 Télécharger Eclipse et le plugin xtext.
@@ -63,7 +63,7 @@ Ce jar peut ensuite être utilisé comme parser :
 Sont également disponibles sur le repo le runnable JAR "projet.jar", et les deux fichiers "right.wh" et "wrong.wh" qui sont respectivement corrects et incorrects afin de pouvoir les tester.  
 
 
-******** **Utiliser le pretty printer** ******************  
+## Utiliser le pretty printer  
 
 Une fois après avoir ajouté le fichier ProjetGenerator.xtend, on peut pretty-printer des fichiers dans l'interface Eclipse.   
 Il faut faire clic-droit sur Projet.xtext -> generate artifacts,   
