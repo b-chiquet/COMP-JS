@@ -1,0 +1,20 @@
+function exampleFunction :
+  read variables entree
+   %
+if condition
+then nop
+fi
+%
+write variables sortie
+
+
+function secondExampleFunction :
+  read variables entree
+   %
+if condition
+then nop
+fi;
+TestVariable := valeur
+
+%
+write variables sortie
