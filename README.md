@@ -94,7 +94,7 @@ Normalement, Eclipse vous demandera de convertir le projet en projet xtext :
 Ensuite, il faut copier dans ce fichier le contenu de test_PP.wh (voir test/test_PP.wh) :
 ![alt text](img/pp4.png)  
 
-Enfin, pour appliquer le pretty printer, il suffit de sauvegarder ce fichier avec ctrl+s. Cela génère un dossier src-gen qui contient toutes les fonctions dans components/ et le fichier pretty-printer dans test.whp : 
+Enfin, pour appliquer le pretty printer, il suffit de sauvegarder ce fichier avec ctrl+s. Cela génère un dossier src-gen qui contient toutes les fonctions dans components/ et le fichier pretty-printer dans file.whp : 
 ![alt text](img/pp5.png)  
 
 
