@@ -16,6 +16,7 @@ import org.xtext.example.projet.COMMAND
 import org.xtext.example.projet.NOP
 import org.xtext.example.projet.AFFECT
 import org.xtext.example.projet.Domainmodel
+import org.xtext.example.projet.IF_THEN
 
 /**
  * Generates code from your model files on save.
@@ -112,16 +113,40 @@ class ProjetGenerator extends AbstractGenerator {
 	
 	//Pour le type "COMMAND", càd chaque commande 
 	def compile(COMMAND c) {
-		'''COMMAND «c.eClass.name» TO DEVELOP HERE'''
+		//Pour chaque commande, on caste dans le subtype pour le compiler
+		//TODO FOR/WHILE/EACH/EXPRESSION/COMPARATOR/FOREACH/COMPARATOR/VAR
+		'''
+		« IF (c.eClass.name == "AFFECT")» 
+			«(c as AFFECT).compile»
+		«ENDIF»
+		« IF (c.eClass.name == "IF_THEN")» 
+			«(c as IF_THEN).compile »
+		«ENDIF»
+		« IF (c.eClass.name == "NOP")» 
+			«(c as NOP).compile»
+		«ENDIF»
+		'''
 	}
 	
 	//Pour le type "AFFECT"
 	def compile(AFFECT a) {
 		//TODO
 		//La forme doit être variable := valeur
-		'''AFFECTATION'''
+		'''AFFECTATION DE LA VAR : «a.variable»'''
 	}
+
+	//Pour le type "IF_THEN"
+	def compile(IF_THEN if_then) {
+		//TODO
+		'''IF : «if_then.cond»'''
+	}	
+
 	
+	//Pour le type "NOP"
+	def compile(NOP n) {
+		'''nop'''
+	}
+		
 	//TODO
 	//Fonctions compile pour : IF/NOP/FOR/WHILE/EACH/EXPRESSION/COMPARATOR/FOREACH/COMPARATOR/VAR
 	

@@ -136,9 +136,9 @@ FUNCTION :
 ;
   
 DEFINITION :
-	("read " inputs=INPUTS)
+	("read" inputs=INPUTS)
 	("%" code=COMMANDS "%")
-	("write " outputs=OUTPUTS)
+	("write" outputs=OUTPUTS)
 ;  
 
 INPUTS:
@@ -154,19 +154,16 @@ COMMANDS : // Plusieurs commandes d'affilé, séparées d'un ;
 	command=COMMAND (';' commands+=COMMAND)*
 ;
 
-COMMAND : 
-	command= IF |
-	command = NOP |
-	command = AFFECT |
-	command = FOR |
-	command = WHILE | 
-	command = FOREACH
+COMMAND :
+	 
+	IF_THEN | NOP | AFFECT | FOR | WHILE | FOREACH
+
 ;
 
 // LES DIFFERENTES COMMANDES
 
 
-IF:
+IF_THEN:
 	('if' cond=CONDITION 'then' comm=COMMANDS (=>'else' commands2=COMMANDS)? 'fi') 	
 ;
 
@@ -176,7 +173,7 @@ NOP:
 ;
 
 AFFECT :
-	affect=VARIABLE ":= valeur"
+	(variable = VARIABLE) ":= valeur"
 ;
 
 FOR :
