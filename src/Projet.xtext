@@ -156,7 +156,7 @@ COMMANDS : // Plusieurs commandes d'affilé, séparées d'un ;
 
 COMMAND :
 	 
-	IF_THEN | NOP | AFFECT | FOR | WHILE | FOREACH
+	IF_THEN | NOP | AFFECT | FOR_LOOP | WHILE | FOREACH
 
 ;
 
@@ -176,7 +176,7 @@ AFFECT :
 	(variable = VARIABLE) ":= valeur"
 ;
 
-FOR :
+FOR_LOOP :
 	"for" exp=EXPRESSION "do" commands+=COMMANDS "od"
 ;
 

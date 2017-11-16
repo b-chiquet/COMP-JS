@@ -17,6 +17,12 @@ import org.xtext.example.projet.NOP
 import org.xtext.example.projet.AFFECT
 import org.xtext.example.projet.Domainmodel
 import org.xtext.example.projet.IF_THEN
+import org.xtext.example.projet.WHILE
+import org.xtext.example.projet.FOREACH
+import org.xtext.example.projet.FOR_LOOP
+import org.xtext.example.projet.VAR
+import org.xtext.example.projet.COMPARATOR
+import org.xtext.example.projet.EXPRESSION
 
 /**
  * Generates code from your model files on save.
@@ -25,132 +31,160 @@ import org.xtext.example.projet.IF_THEN
  */
 class ProjetGenerator extends AbstractGenerator {
 
-
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 
-		//Pour toutes les fonctions du fichier
-		for(f: resource.allContents.toIterable.filter(typeof(FUNCTION))){
-			//On génère un fichier pour chaque fonction présente dans le fichier
+		// Pour toutes les fonctions du fichier
+		for (f : resource.allContents.toIterable.filter(typeof(FUNCTION))) {
+			// On génère un fichier pour chaque fonction présente dans le fichier
 			fsa.generateFile(
 				"components/" + f.name + ".whp",
 				f.compile
 			)
 		}
-		
-		//Pour chaque fichier
-		for(d: resource.allContents.toIterable.filter(typeof(Domainmodel))){
-			//On génère un nouveau fichier en appliquant la fonction compile sur tous les éléments du fichier
+
+		// Pour chaque fichier
+		for (d : resource.allContents.toIterable.filter(typeof(Domainmodel))) {
+			// On génère un nouveau fichier en appliquant la fonction compile sur tous les éléments du fichier
 			fsa.generateFile(
 				"file.whp",
 				d.compile
 			)
 		}
 	}
-	
-	//Pour le type "Domainmodel", qui représente tout le fichier
+
+	// Pour le type "Domainmodel", qui représente tout le fichier
 	def compile(Domainmodel d) {
-		//On compile toutes les fonctions comprises dans le fichier une à une
+		// On compile toutes les fonctions comprises dans le fichier une à une
 		'''
-		«FOR f: d.functions»
-			«f.compile»
-			
-		«ENDFOR»
+			«FOR f : d.functions»
+				«f.compile»
+				
+			«ENDFOR»
 		'''
 	}
-	
-	//Pour le type "FUNCTION"
+
+	// Pour le type "FUNCTION"
 	def compile(FUNCTION f) {
-		//On affiche le commentaire ";Result of pretty printing process function" 
-		//et le nom de la fonction, puis on compile le contenu de la fonction
+		// On affiche le commentaire ";Result of pretty printing process function" 
+		// et le nom de la fonction, puis on compile le contenu de la fonction
 		'''
-		; Result of pretty printing process
-		function «f.name» :
-		
-			«f.def.compile»
+			; Result of pretty printing process
+			function «f.name» :
+			
+				«f.def.compile»
 		'''
-		//f.def.compile est écrit après une tabulation, ce qui va indenter tout le
-		//contenu de la fonction
+	// f.def.compile est écrit après une tabulation, ce qui va indenter tout le
+	// contenu de la fonction
 	}
-	
-	//Pour le type "DEFINTION"
+
+	// Pour le type "DEFINTION"
 	def compile(DEFINITION d) {
-		//on affiche read input, puis le code intérieur indenté, puis write output
+		// on affiche read input, puis le code intérieur indenté, puis write output
 		'''
-		read «d.inputs.compile»
-		%
-			«d.code.compile»
-		%
-		write «d.outputs.compile»
+			read «d.inputs.compile»
+			%
+				«d.code.compile»
+			%
+			write «d.outputs.compile»
 		'''
 	}
-	
-	//Pour le type INPUT
+
+	// Pour le type INPUT
 	def compile(INPUTS i) {
-		//Rien de particulier pour l'instant
+		// Rien de particulier pour l'instant
 		'''
-		«i.input»
+			«i.input»
 		'''
 	}
-	
-	//Pour le type OUTPUT
+
+	// Pour le type OUTPUT
 	def compile(OUTPUTS o) {
-		//Rien de particulier pour l'instant
+		// Rien de particulier pour l'instant
 		'''
-		«o.output»
+			«o.output»
 		'''
 	}
-	
-	//Pour le type "COMMANDS"
+
+	// Pour le type "COMMANDS"
 	def compile(COMMANDS c) {
-		//Pour les commandes (IF/NOP/AFFECT/FOR/WHILE/EACH)
+		// Pour les commandes (IF/NOP/AFFECT/FOR/WHILE/EACH)
 		'''
-		«c.command.compile» «IF !c.commands.empty»;«ENDIF»
-		«FOR line : c.commands»
-			«line.compile» ;
-		«ENDFOR»
+			«c.command.compile» «IF !c.commands.empty»;«ENDIF»
+			«FOR line : c.commands»
+				«line.compile» ;
+			«ENDFOR»
 		'''
 	}
-	
-	//Pour le type "COMMAND", càd chaque commande 
+
+	// Pour le type "COMMAND", càd chaque commande 
 	def compile(COMMAND c) {
-		//Pour chaque commande, on caste dans le subtype pour le compiler
-		//TODO FOR/WHILE/EACH/EXPRESSION/COMPARATOR/FOREACH/COMPARATOR/VAR
+		// Pour chaque commande, on caste dans le subtype pour le compiler
 		'''
-		« IF (c.eClass.name == "AFFECT")» 
-			«(c as AFFECT).compile»
-		«ENDIF»
-		« IF (c.eClass.name == "IF_THEN")» 
-			«(c as IF_THEN).compile »
-		«ENDIF»
-		« IF (c.eClass.name == "NOP")» 
-			«(c as NOP).compile»
-		«ENDIF»
+			«IF (c.eClass.name == "AFFECT")» 
+				«(c as AFFECT).compile»
+			«ENDIF»
+			«IF (c.eClass.name == "IF_THEN")» 
+				«(c as IF_THEN).compile »
+			«ENDIF»
+			«IF (c.eClass.name == "NOP")» 
+				«(c as NOP).compile»
+			«ENDIF»
+			«IF (c.eClass.name == "FOR_LOOP")» 
+				«(c as FOR_LOOP).compile»
+			«ENDIF»
+			«IF (c.eClass.name == "WHILE")» 
+				«(c as WHILE).compile»
+			«ENDIF»
+			«IF (c.eClass.name == "FOREACH")» 
+				«(c as FOREACH).compile »
+			«ENDIF»
 		'''
 	}
-	
-	//Pour le type "AFFECT"
+
+	// Pour le type "AFFECT"
 	def compile(AFFECT a) {
-		//TODO
-		//La forme doit être variable := valeur
+		// TODO
+		// La forme doit être variable := valeur
 		'''AFFECTATION DE LA VAR : «a.variable»'''
 	}
 
-	//Pour le type "IF_THEN"
+	// Pour le type "IF_THEN"
 	def compile(IF_THEN if_then) {
-		//TODO
+		// TODO
 		'''IF : «if_then.cond»'''
-	}	
+	}
 
-	
-	//Pour le type "NOP"
+	// Pour le type "NOP"
 	def compile(NOP n) {
 		'''nop'''
 	}
-		
-	//TODO
-	//Fonctions compile pour : IF/NOP/FOR/WHILE/EACH/EXPRESSION/COMPARATOR/FOREACH/COMPARATOR/VAR
 	
+	def compile(FOR_LOOP fl){
+		//TODO
+	}
 	
+	def compile(WHILE w){
+		//TODO
+	}
 	
+
+	
+	def compile(COMPARATOR c){
+		//TODO
+	}
+	
+	def compile(FOREACH fe){
+		//TODO
+	}
+	
+	def compile(VAR v){
+		//TODO
+	}
+
+	//Plus compliqué -> need bcp de modifications au niveau de la grammaire
+	def compile(EXPRESSION e){
+		'''expression'''
+		//TODO
+	}
 
 }
