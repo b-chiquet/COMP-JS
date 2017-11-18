@@ -120,26 +120,26 @@ class ProjetGenerator extends AbstractGenerator {
 	// Pour le type "COMMAND", càd chaque commande 
 	def compile(COMMAND c) {
 		// Pour chaque commande, on caste dans le subtype pour le compiler
-		'''
-			«IF (c.eClass.name == "AFFECT")» 
-				«(c as AFFECT).compile»
-			«ENDIF»
-			«IF (c.eClass.name == "IF_THEN")» 
-				«(c as IF_THEN).compile »
-			«ENDIF»
-			«IF (c.eClass.name == "NOP")» 
-				«(c as NOP).compile»
-			«ENDIF»
-			«IF (c.eClass.name == "FOR_LOOP")» 
-				«(c as FOR_LOOP).compile»
-			«ENDIF»
-			«IF (c.eClass.name == "WHILE")» 
-				«(c as WHILE).compile»
-			«ENDIF»
-			«IF (c.eClass.name == "FOREACH")» 
-				«(c as FOREACH).compile »
-			«ENDIF»
-		'''
+		
+		if(c.eClass.name == "AFFECT"){
+			return '''«(c as AFFECT).compile»'''
+		}
+		if(c.eClass.name == "IF_THEN"){
+			return '''«(c as IF_THEN).compile»'''
+		}
+		if(c.eClass.name == "NOP"){
+			return '''«(c as NOP).compile»'''
+		}
+		if(c.eClass.name == "FOR_LOOP"){
+			return '''«(c as FOR_LOOP).compile»'''
+		}
+		if(c.eClass.name == "WHILE"){
+			return '''«(c as WHILE).compile»'''
+		}
+		if(c.eClass.name == "FOREACH"){
+			return '''«(c as FOREACH).compile»'''
+		}
+
 	}
 
 	// Pour le type "AFFECT"
