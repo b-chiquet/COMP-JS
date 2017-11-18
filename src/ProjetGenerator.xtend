@@ -7,23 +7,7 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import org.xtext.example.projet.FUNCTION
-import org.xtext.example.projet.DEFINITION
-import org.xtext.example.projet.INPUTS
-import org.xtext.example.projet.COMMANDS
-import org.xtext.example.projet.OUTPUTS
-import org.xtext.example.projet.COMMAND
-import org.xtext.example.projet.NOP
-import org.xtext.example.projet.AFFECT
-import org.xtext.example.projet.Domainmodel
-import org.xtext.example.projet.IF_THEN
-import org.xtext.example.projet.WHILE
-import org.xtext.example.projet.FOREACH
-import org.xtext.example.projet.FOR_LOOP
-import org.xtext.example.projet.VAR
-import org.xtext.example.projet.COMPARATOR
-import org.xtext.example.projet.EXPRESSION
-
+import org.xtext.example.projet.*
 /**
  * Generates code from your model files on save.
  * 
@@ -108,10 +92,11 @@ class ProjetGenerator extends AbstractGenerator {
 	// Pour le type "COMMANDS"
 	def compile(COMMANDS c) {
 		// Pour les commandes (IF/NOP/AFFECT/FOR/WHILE/EACH)
+		//TODO ne pas mettre un ; à la toute dernière commande
 		'''
-			«c.command.compile» «IF !c.commands.empty»;«ENDIF»
+			«c.command.compile»«IF !c.commands.empty»;«ENDIF»
 			«FOR line : c.commands»
-				«line.compile» ;
+				«line.compile»«IF line != c.commands.last»;«ENDIF»
 			«ENDFOR»
 		'''
 	}
@@ -145,13 +130,17 @@ class ProjetGenerator extends AbstractGenerator {
 	def compile(AFFECT a) {
 		// TODO
 		// La forme doit être variable := valeur
-		'''AFFECTATION DE LA VAR : «a.variable»'''
+		'''«a.variable» := «a.valeur» '''
 	}
 
 	// Pour le type "IF_THEN"
 	def compile(IF_THEN if_then) {
 		// TODO
-		'''IF : «if_then.cond»'''
+		'''
+		IF «if_then.cond»
+		THEN «if_then.comm.compile»
+		FI
+		'''
 	}
 
 	// Pour le type "NOP"
@@ -179,6 +168,9 @@ class ProjetGenerator extends AbstractGenerator {
 	
 	def compile(VAR v){
 		//TODO
+		'''
+		VAR
+		'''
 	}
 
 	//Plus compliqué -> need bcp de modifications au niveau de la grammaire

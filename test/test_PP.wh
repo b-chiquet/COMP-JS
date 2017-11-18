@@ -1,20 +1,22 @@
 function exampleFunction :
-  read variables entree
+  read A
    %
 if condition
 then nop
 fi
 %
-write variables sortie
+write B
 
 
 function secondExampleFunction :
-  read variables entree
+  read A
    %
 if condition
 then nop
 fi;
-TestVariable := valeur
+TestVariable := 12
+;
+AutreVar := TestVariable
 
 %
-write variables sortie
+write B
