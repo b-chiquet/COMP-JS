@@ -7,7 +7,23 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import org.xtext.example.projet.*
+import org.xtext.example.projet.AFFECT
+import org.xtext.example.projet.COMMAND
+import org.xtext.example.projet.COMMANDS
+import org.xtext.example.projet.COMPARATOR
+import org.xtext.example.projet.DEFINITION
+import org.xtext.example.projet.Domainmodel
+import org.xtext.example.projet.EXPRESSION
+import org.xtext.example.projet.FOREACH
+import org.xtext.example.projet.FOR_LOOP
+import org.xtext.example.projet.FUNCTION
+import org.xtext.example.projet.IF_THEN
+import org.xtext.example.projet.INPUTS
+import org.xtext.example.projet.NOP
+import org.xtext.example.projet.OUTPUTS
+import org.xtext.example.projet.VAR
+import org.xtext.example.projet.WHILE
+
 /**
  * Generates code from your model files on save.
  * 
@@ -141,6 +157,8 @@ class ProjetGenerator extends AbstractGenerator {
 		THEN «if_then.comm.compile»
 		FI
 		'''
+		//«IF !if_then.commands2.commands.empty»ELSE«ENDIF»
+		
 	}
 
 	// Pour le type "NOP"
