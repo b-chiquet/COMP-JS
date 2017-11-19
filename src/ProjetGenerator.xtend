@@ -12,7 +12,6 @@ import org.xtext.example.projet.COMMAND
 import org.xtext.example.projet.COMMANDS
 import org.xtext.example.projet.COMPARATOR
 import org.xtext.example.projet.DEFINITION
-import org.xtext.example.projet.Domainmodel
 import org.xtext.example.projet.EXPRESSION
 import org.xtext.example.projet.FOREACH
 import org.xtext.example.projet.FOR_LOOP
@@ -21,7 +20,7 @@ import org.xtext.example.projet.IF_THEN
 import org.xtext.example.projet.INPUTS
 import org.xtext.example.projet.NOP
 import org.xtext.example.projet.OUTPUTS
-import org.xtext.example.projet.VAR
+import org.xtext.example.projet.PROGRAM
 import org.xtext.example.projet.WHILE
 
 /**
@@ -43,7 +42,7 @@ class ProjetGenerator extends AbstractGenerator {
 		}
 
 		// Pour chaque fichier
-		for (d : resource.allContents.toIterable.filter(typeof(Domainmodel))) {
+		for (d : resource.allContents.toIterable.filter(typeof(PROGRAM))) {
 			// On génère un nouveau fichier en appliquant la fonction compile sur tous les éléments du fichier
 			fsa.generateFile(
 				"file.whp",
@@ -53,7 +52,7 @@ class ProjetGenerator extends AbstractGenerator {
 	}
 
 	// Pour le type "Domainmodel", qui représente tout le fichier
-	def compile(Domainmodel d) {
+	def compile(PROGRAM d) {
 		// On compile toutes les fonctions comprises dans le fichier une à une
 		'''
 			«FOR f : d.functions»
@@ -108,7 +107,6 @@ class ProjetGenerator extends AbstractGenerator {
 	// Pour le type "COMMANDS"
 	def compile(COMMANDS c) {
 		// Pour les commandes (IF/NOP/AFFECT/FOR/WHILE/EACH)
-		//TODO ne pas mettre un ; à la toute dernière commande
 		'''
 			«c.command.compile»«IF !c.commands.empty»;«ENDIF»
 			«FOR line : c.commands»
@@ -120,7 +118,6 @@ class ProjetGenerator extends AbstractGenerator {
 	// Pour le type "COMMAND", càd chaque commande 
 	def compile(COMMAND c) {
 		// Pour chaque commande, on caste dans le subtype pour le compiler
-		
 		if(c.eClass.name == "AFFECT"){
 			return '''«(c as AFFECT).compile»'''
 		}
@@ -139,26 +136,31 @@ class ProjetGenerator extends AbstractGenerator {
 		if(c.eClass.name == "FOREACH"){
 			return '''«(c as FOREACH).compile»'''
 		}
-
 	}
 
 	// Pour le type "AFFECT"
 	def compile(AFFECT a) {
 		// TODO
 		// La forme doit être variable := valeur
-		'''«a.variable» := «a.valeur» '''
+		'''AFFECTATION DE LA VAR : «a.variable»'''
 	}
 
 	// Pour le type "IF_THEN"
 	def compile(IF_THEN if_then) {
 		// TODO
 		'''
-		IF «if_then.cond»
-		THEN «if_then.comm.compile»
-		FI
+			if «if_then.cond.compile» then
+				«FOR line : if_then.comm»
+					«line.compile»
+				«ENDFOR»
+			«IF !if_then.commands2.empty»
+			else
+				«FOR line : if_then.commands2»
+					«line.compile»
+				«ENDFOR»
+			«ENDIF»
+			fi
 		'''
-		//«IF !if_then.commands2.commands.empty»ELSE«ENDIF»
-		
 	}
 
 	// Pour le type "NOP"
@@ -167,7 +169,13 @@ class ProjetGenerator extends AbstractGenerator {
 	}
 	
 	def compile(FOR_LOOP fl){
-		//TODO
+		'''
+			for «fl.exp.compile» do
+				«FOR line : fl.commands»
+					«line.compile»
+				«ENDFOR»
+			od
+		'''
 	}
 	
 	def compile(WHILE w){
@@ -182,13 +190,6 @@ class ProjetGenerator extends AbstractGenerator {
 	
 	def compile(FOREACH fe){
 		//TODO
-	}
-	
-	def compile(VAR v){
-		//TODO
-		'''
-		VAR
-		'''
 	}
 
 	//Plus compliqué -> need bcp de modifications au niveau de la grammaire

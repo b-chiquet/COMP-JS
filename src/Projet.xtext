@@ -15,7 +15,7 @@ FUNCTION :
   
 DEFINITION :
 	("read" inputs=INPUTS)
-	("%" code=CODE)
+	("%" code=COMMANDS)
 	("%" "write" outputs=OUTPUTS)
 ;  
 
@@ -27,43 +27,38 @@ OUTPUTS:
 	output=VARIABLE ("," outputs=OUTPUTS)?
 ;
 
-CODE:
-	(commandes+=COMMAND)*
-;
-
-
-COMPARATOR : 
-	comp=("==" |"!=" | "<" | ">" | "<=" | ">=")
-;
-
 OPERATOR :
 	op=('+' | '-' | '*' | '/')
 ;
 
 
 // -- COMMANDES -- 
+COMMANDS : // Plusieurs commandes d'affilé, séparées d'un ;
+	command=COMMAND (';' commands+=COMMAND)*
+;
+
 COMMAND : 
-	(IF | WHILE | FOR | AFFECT | FOREACH | NOP) (";" commandes=COMMAND)?
+	IF_THEN | NOP | AFFECT | FOR_LOOP | WHILE | FOREACH
 ;
 
 NOP:
 	nop="nop"
 ;
 
-IF :
-	"if" EXPRESSION "then" (commandes=COMMAND)* ("else" (commandes=COMMAND)*)? "fi"
+IF_THEN:
+	'if' cond=EXPRESSION 'then' commands1+=COMMANDS (=>'else' commands2+=COMMANDS)? 'fi'
 ;
 
 WHILE :
-	"while" EXPRESSION "do" (commandes=COMMAND)* "od"
+	"while" EXPRESSION "do" commands+=COMMANDS "od"
 ;
 
-FOR :
-	"for" EXPRESSION "do" (commandes=COMMAND)* "od"
+FOR_LOOP :
+	"for" exp=EXPRESSION "do" commands+=COMMANDS "od"
 ;
 
 FOREACH:
-	"foreach" exp1=EXPRESSION "in" exp2=EXPRESSION "do" (commandes=COMMAND)* "od"
+	"foreach" exp1=EXPRESSION "in" exp2=EXPRESSION "do" commands+=COMMANDS "od"
 ;
 
 AFFECT:
@@ -127,12 +122,12 @@ terminal NOMBRE :
 */
 
 /* --------------------- GRAMMAIRE PRIMITIVE ----------------------- */
-Domainmodel :
+PROGRAM :
 	(functions += FUNCTION)*
 ;
 
 FUNCTION :
-	"function " name=NAME ":" def=DEFINITION
+	"function" name=NAME ":" def=DEFINITION
 ;
   
 DEFINITION :
@@ -142,29 +137,27 @@ DEFINITION :
 ;  
 
 INPUTS:
-	input=VARIABLE
+	input="variables entree"
 ;
 
 
 OUTPUTS:
-	output=VARIABLE
-	;
+	output="variables sortie"
+;
   
-COMMANDS : // Plusieurs commandes d'affilÃ©, sÃ©parÃ©es d'un ;
+COMMANDS : // Plusieurs commandes d'affilé, séparées d'un ;
 	command=COMMAND (';' commands+=COMMAND)*
 ;
 
-COMMAND :
-	 
+COMMAND : 
 	IF_THEN | NOP | AFFECT | FOR_LOOP | WHILE | FOREACH
-
 ;
 
 // LES DIFFERENTES COMMANDES
 
 
 IF_THEN:
-	('if' cond=CONDITION 'then' comm=COMMANDS (=>'else' commands2=COMMANDS)? 'fi') 	
+	'if' cond=EXPRESSION 'then' comm+=COMMANDS (=>'else' commands2+=COMMANDS)? 'fi'
 ;
 
 
@@ -173,7 +166,7 @@ NOP:
 ;
 
 AFFECT :
-	(variable = VARIABLE) ":=" (valeur = (NUMBER|VARIABLE))
+	(variable = VARIABLE) ":= valeur"
 ;
 
 FOR_LOOP :
@@ -185,7 +178,7 @@ WHILE :
 ;
 
 FOREACH : 
-	("foreach" exp=EXPRESSION "in" exp=EXPRESSION "do" commands=COMMANDS "od")
+	("foreach" exp1=EXPRESSION "in" exp2=EXPRESSION "do" commands=COMMANDS "od")
 ;
 
 CONDITION :
@@ -199,10 +192,6 @@ COMPARATOR :
 
 EXPRESSION : 
 	exp="expression"
-;
-
-VAR :
-	var_name=VARIABLE
 ;
 
 // TERMINAUX
