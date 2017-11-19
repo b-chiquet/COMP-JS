@@ -187,6 +187,13 @@ class ProjetGenerator extends AbstractGenerator {
 	}
 	
 	def compile(FOREACH fe){
+		'''
+			foreach «fe.exp1.compile» in «fe.exp2.compile» do 
+				«FOR line : fe.commands»
+					«line.compile»
+				«ENDFOR»
+			od
+		'''
 		//TODO
 	}
 
