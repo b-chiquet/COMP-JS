@@ -137,12 +137,12 @@ DEFINITION :
 ;  
 
 INPUTS:
-	input="variables entree"
+	input=VARIABLE
 ;
 
 
 OUTPUTS:
-	output="variables sortie"
+	output=VARIABLE
 ;
   
 COMMANDS : // Plusieurs commandes d'affilé, séparées d'un ;
@@ -166,7 +166,7 @@ NOP:
 ;
 
 AFFECT :
-	(variable = VARIABLE) ":= valeur"
+	(variable = VARIABLE) ":=" (valeur =(VARIABLE|NUMBER))
 ;
 
 FOR_LOOP :

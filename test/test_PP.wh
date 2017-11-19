@@ -1,7 +1,7 @@
 function exampleFunction :
   read A
    %
-if condition
+if expression
 then nop
 fi
 %
@@ -11,7 +11,7 @@ write B
 function secondExampleFunction :
   read A
    %
-if condition
+if expression
 then nop
 fi;
 TestVariable := 12

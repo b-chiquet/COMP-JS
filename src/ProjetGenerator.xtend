@@ -140,9 +140,7 @@ class ProjetGenerator extends AbstractGenerator {
 
 	// Pour le type "AFFECT"
 	def compile(AFFECT a) {
-		// TODO
-		// La forme doit être variable := valeur
-		'''AFFECTATION DE LA VAR : «a.variable»'''
+		'''«a.variable» := «a.valeur»'''
 	}
 
 	// Pour le type "IF_THEN"
