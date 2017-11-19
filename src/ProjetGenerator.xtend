@@ -157,8 +157,7 @@ class ProjetGenerator extends AbstractGenerator {
 					«line.compile»
 				«ENDFOR»
 			«ENDIF»
-			fi
-		'''
+			fi'''
 	}
 
 	// Pour le type "NOP"
@@ -172,8 +171,7 @@ class ProjetGenerator extends AbstractGenerator {
 				«FOR line : fl.commands»
 					«line.compile»
 				«ENDFOR»
-			od
-		'''
+			od'''
 	}
 	
 	def compile(WHILE w){
@@ -192,8 +190,7 @@ class ProjetGenerator extends AbstractGenerator {
 				«FOR line : fe.commands»
 					«line.compile»
 				«ENDFOR»
-			od
-		'''
+			od'''
 		//TODO
 	}
 
