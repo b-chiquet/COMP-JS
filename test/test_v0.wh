@@ -7,7 +7,7 @@ function testIF :
 		X:=nil;Y:=3;Z:=7;
 		X,Y,Z := Y,Z,10;
 		
-		if X<Z
+		if expression
 		then
 			X:=Y
 		fi
@@ -23,7 +23,7 @@ function testWHILE :
 		X:=nil;Y:=3;Z:=7;
 		X,Y,Z := Y,Z,10;
 		
-		while X<Z 
+		while expression
 		do 
 			X:=Y
 		od
@@ -42,7 +42,7 @@ function testIFELSE :
 		X:=nil;Y:=3;Z:=7;
 		X,Y,Z := Y,Z,10;
 		
-		if X>Z then
+		if expression then
 		X:=0
 		else 
 		X:=Y
@@ -60,7 +60,7 @@ function testFORLOOP :
 		X,Y,Z := Y,Z,10;
 		
 		
-		for  X<Z
+		for  expression
 			do
 				X:=Y
 		od
