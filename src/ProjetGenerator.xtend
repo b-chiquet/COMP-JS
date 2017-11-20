@@ -139,7 +139,7 @@ class ProjetGenerator extends AbstractGenerator {
 
 	// Pour le type "AFFECT"
 	def compile(AFFECT a) {
-		'''«a.variable» := «a.valeur»'''
+		'''«a.variable»«FOR x : a.vars»,«x»«ENDFOR»:=«a.valeur.compile»«FOR y : a.vals»,«y.compile»«ENDFOR»'''
 	}
 
 	// Pour le type "IF_THEN"
