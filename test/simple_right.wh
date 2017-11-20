@@ -1,6 +1,0 @@
-function truc : 
-read variables entree
-%
-nop
-% 
-write variables sortie

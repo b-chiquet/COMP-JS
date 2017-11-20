@@ -58,7 +58,7 @@ FOREACH:
 ;
 
 AFFECT:
-	variable=VARIABLE ("," vars+=VARIABLE)* ":=" val=EXPRESSION ("," vals+=EXPRESSION)*
+	variable=VARIABLE ("," vars+=VARIABLE)* ":=" valeur=EXPRESSION ("," vals+=EXPRESSION)*
 ;
 
 
@@ -98,7 +98,7 @@ EQ:
 
 EXPRSIMPLE:
 	val=("nil" | VARIABLE | SYMBOLE | NOMBRE)  | 
-	'(' 'cons' lexpr=LEXPR ')' | '(' 'list'lexpr=LEXPR ')' | 
+	'(' 'cons' lexpr=LEXPR ')' | '(' 'list' lexpr=LEXPR ')' | 
 	'(' 'hd' expr=EXPRESSION ')' | '(' 'tl' expr=EXPRESSION ')' |
 	'(' sym=SYMBOLE lexpr=LEXPR ')'
 ;
