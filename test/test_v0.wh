@@ -1,0 +1,68 @@
+function test_IF :
+//doit rendre 4
+	read X, Y, Z
+	%
+		nop
+		
+		X:=nil;Y:=3;Z=7;
+		X,Y,Z := Y,Z,10;
+		
+		if X<Z
+		then
+			X:=X+1
+		fi
+	%
+write X
+
+function test_WHILE :
+//doit rendre 9	
+	read X, Y, Z
+	%
+		nop;
+		
+		X:=nil;Y:=3;Z=7;
+		X,Y,Z := Y,Z,10;
+		
+		while X<Z 
+		do 
+			X:=X+1
+		od
+write X
+
+function test_IF_ELSE :	
+//doit rendre 4
+	read X, Y, Z
+	%
+		nop;
+		
+		
+		
+		
+		X:=nil;Y:=3;Z=7;
+		X,Y,Z := Y,Z,10;
+		
+		if X>Z then
+		X:=0
+		else 
+		X:=X+1
+		fi
+write X
+
+function test_FOR_LOOP :
+//doit rendre 9
+	read X, Y, Z
+	%
+		nop;
+		
+		X:=nil;Y:=3;Z=7;
+		X,Y,Z := Y,Z,10;
+		
+		
+		for  X<Z
+			do
+				X:=X+1
+		od
+		
+
+	% 
+write X
