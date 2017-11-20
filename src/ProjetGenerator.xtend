@@ -10,7 +10,6 @@ import org.eclipse.xtext.generator.IGeneratorContext
 import org.xtext.example.projet.AFFECT
 import org.xtext.example.projet.COMMAND
 import org.xtext.example.projet.COMMANDS
-import org.xtext.example.projet.COMPARATOR
 import org.xtext.example.projet.DEFINITION
 import org.xtext.example.projet.EXPRESSION
 import org.xtext.example.projet.FOREACH
@@ -140,7 +139,9 @@ class ProjetGenerator extends AbstractGenerator {
 
 	// Pour le type "AFFECT"
 	def compile(AFFECT a) {
-		'''«a.variable» := «a.valeur»'''
+		// TODO
+		// La forme doit être variable := valeur
+		'''AFFECTATION DE LA VAR : «a.variable»'''
 	}
 
 	// Pour le type "IF_THEN"
@@ -148,7 +149,7 @@ class ProjetGenerator extends AbstractGenerator {
 		// TODO
 		'''
 			if «if_then.cond.compile» then
-				«FOR line : if_then.comm»
+				«FOR line : if_then.commands1»
 					«line.compile»
 				«ENDFOR»
 			«IF !if_then.commands2.empty»
@@ -175,22 +176,15 @@ class ProjetGenerator extends AbstractGenerator {
 	}
 	
 	def compile(WHILE w){
-		//TODO
-	}
-	
-
-	
-	def compile(COMPARATOR c){
-		//TODO
-	}
-	
-	def compile(FOREACH fe){
 		'''
-			foreach «fe.exp1.compile» in «fe.exp2.compile» do 
-				«FOR line : fe.commands»
+			while «w.cond.compile» do
+				«FOR line : w.commands»
 					«line.compile»
 				«ENDFOR»
 			od'''
+	}
+	
+	def compile(FOREACH fe){
 		//TODO
 	}
 

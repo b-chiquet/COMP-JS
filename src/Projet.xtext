@@ -2,15 +2,15 @@ grammar org.xtext.example.Projet with org.eclipse.xtext.common.Terminals
 
 generate projet "http://www.xtext.org/example/Projet"
 
-/*
+
 
 // ------------------- GRAMMAIRE PLUS POUSSEE ------------------------------- //
 PROGRAM :
-	func=FUNCTION ("CR" prog=PROGRAM)?
+	(functions += FUNCTION)*
 ;
 
 FUNCTION :
-	"function" name=ID ":" def=DEFINITION
+	"function" name=SYMBOLE ":" def=DEFINITION
 ;
   
 DEFINITION :
@@ -25,10 +25,6 @@ INPUTS:
 
 OUTPUTS:
 	output=VARIABLE ("," outputs=OUTPUTS)?
-;
-
-OPERATOR :
-	op=('+' | '-' | '*' | '/')
 ;
 
 
@@ -50,7 +46,7 @@ IF_THEN:
 ;
 
 WHILE :
-	"while" EXPRESSION "do" commands+=COMMANDS "od"
+	"while" cond=EXPRESSION "do" commands+=COMMANDS "od"
 ;
 
 FOR_LOOP :
@@ -62,66 +58,76 @@ FOREACH:
 ;
 
 AFFECT:
-	var+=VARIABLE ("," vars+=VARIABLE)* ":=" val=EXPRESSION ("," vals+=EXPRESSION)*
+	variable=VARIABLE ("," vars+=VARIABLE)* ":=" val=EXPRESSION ("," vals+=EXPRESSION)*
 ;
 
 
 // -- EXPRESSIONS -- 
 EXPRESSION : 
-	expr= "expression_simple" | "expression_logique" | "nil" | VARIABLE | SYMBOLE | NOMBRE
-;
-
-EXPRESSION : 
-	expr= EXPRSIMPLE | EXPRLOGIQUE
-;
-
-EXPRLOGIQUE:
-	EXPROR
-;
-
-EXPROR:
-	EXPRAND ('or' and+=EXPRAND)*
+	(EXPRSIMPLE |=> EXPRAND)
 ;
 
 EXPRAND:
-	EXPREQ ('and' eq+=EXPREQ)*
+	expor=EXPROR AND expands+=EXPRAND | => expor=EXPROR
+;
+
+EXPROR:
+	expnot=EXPRNOT OR expands+=EXPRAND | => expnot=EXPRNOT
+;
+
+EXPRNOT:
+	NOT expeq=EXPREQ | => expeq=EXPREQ
 ;
 
 EXPREQ:
-	EXPRSIMPLE '=?' exp=EXPRSIMPLE | '(' EXPRESSION ')'
+	exp1=EXPRSIMPLE EQ exp2=EXPRSIMPLE | => '(' exp=EXPRESSION ')'
 ;
 
+AND:
+	'and'
+;
+OR:
+	'or'
+;
+NOT:
+	'not'
+;
+EQ:
+	'=?'
+;
 
 EXPRSIMPLE:
-	exp = "nil" | VARIABLE | SYMBOLE | 
-	'(' (('cons'|'list') LEXPR) | 
-	(('hd'|'tl') EXPRESSION) | 
-	(SYMBOLE LEXPR) ')'
+	val=("nil" | VARIABLE | SYMBOLE | NOMBRE)  | 
+	'(' 'cons' lexpr=LEXPR ')' | '(' 'list'lexpr=LEXPR ')' | 
+	'(' 'hd' expr=EXPRESSION ')' | '(' 'tl' expr=EXPRESSION ')' |
+	'(' sym=SYMBOLE lexpr=LEXPR ')'
 ;
 
 LEXPR:
-	expr= EXPRESSION lexpr=LEXPR?
+	expr = EXPRESSION ( lexpr=LEXPR)?
 ;
 
 
 // -- DONNEES -- 
 terminal VARIABLE :
-	('A'..'Z')(('0'..'9')('A'..'Z')('a'..'z'))*
+	('A'..'Z')(('0'..'9')|('A'..'Z')|('a'..'z'))*
 ;
 
 terminal SYMBOLE :
-	('a'..'z')(('0'..'9')('A'..'Z')('a'..'z'))*
+	('a'..'z')(('0'..'9')|('A'..'Z')|('a'..'z'))*
 ;
 
 terminal NOMBRE :
 	('1'..'9')('0'..'9')*
 ;
+
 //-------------------------------------------------------------------- 
 
 
-*/
+
 
 /* --------------------- GRAMMAIRE PRIMITIVE ----------------------- */
+/*
 PROGRAM :
 	(functions += FUNCTION)*
 ;
@@ -137,12 +143,12 @@ DEFINITION :
 ;  
 
 INPUTS:
-	input=VARIABLE
+	input="variables entree"
 ;
 
 
 OUTPUTS:
-	output=VARIABLE	
+	output="variables sortie"
 ;
   
 COMMANDS : // Plusieurs commandes d'affilé, séparées d'un ;
@@ -166,7 +172,7 @@ NOP:
 ;
 
 AFFECT :
-	(variable = VARIABLE) ":=" (valeur =(VARIABLE|NUMBER))
+	(variable = VARIABLE) ":= valeur"
 ;
 
 FOR_LOOP :
@@ -174,20 +180,15 @@ FOR_LOOP :
 ;
 
 WHILE :
-	("while" CONDITION "do" commands=COMMANDS "od")
+	("while" cond=CONDITION "do" commands=COMMANDS "od")
 ;
 
 FOREACH : 
-	("foreach" exp1=EXPRESSION "in" exp2=EXPRESSION "do" commands+=COMMANDS "od")
+	("foreach" exp1=EXPRESSION "in" exp2=EXPRESSION "do" commands=COMMANDS "od")
 ;
 
 CONDITION :
 	"condition"
-;
-
-
-COMPARATOR : 
-	comp=("==" |"!=")
 ;
 
 EXPRESSION : 
@@ -208,4 +209,5 @@ terminal NAME:
 terminal NUMBER:
 	('1'..'9')('0'..'9')*
 ;
+*/
 /*------------------------------------------------------------------- */
