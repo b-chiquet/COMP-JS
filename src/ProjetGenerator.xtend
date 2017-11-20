@@ -184,12 +184,12 @@ class ProjetGenerator extends AbstractGenerator {
 	
 	def compile(FOREACH fe){
 		'''
-		foreach «fe.exp1.compile» in «fe.exp2.compile» do 
- 				«FOR line : fe.commands»
-  					«line.compile»
-  				«ENDFOR»
-  			od'''	
-  			}
+		foreach «fe.exp1.compile» in «fe.exp2.compile» do
+			«FOR line : fe.commands»
+				«line.compile»
+			«ENDFOR»
+		od'''	
+  	}
 
 	//Plus compliqué -> need bcp de modifications au niveau de la grammaire
 	def compile(EXPRESSION e){
