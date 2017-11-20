@@ -1,5 +1,5 @@
 function testIF :
-//doit rendre 4
+
 	read X, Y, Z
 	%
 		nop;
@@ -9,13 +9,13 @@ function testIF :
 		
 		if X<Z
 		then
-			X:=X+1
+			X:=Y
 		fi
 	%
 write X
 
 function testWHILE :
-//doit rendre 9	
+
 	read X, Y, Z
 	%
 		nop;
@@ -25,13 +25,13 @@ function testWHILE :
 		
 		while X<Z 
 		do 
-			X:=X+1
+			X:=Y
 		od
 		%
 write X
 
 function testIFELSE :	
-//doit rendre 4
+
 	read X, Y, Z
 	%
 		nop;
@@ -45,13 +45,13 @@ function testIFELSE :
 		if X>Z then
 		X:=0
 		else 
-		X:=X+1
+		X:=Y
 		fi
 	%	
 write X
 
 function testFORLOOP :
-//doit rendre 9
+
 	read X, Y, Z
 	%
 		nop;
@@ -62,7 +62,7 @@ function testFORLOOP :
 		
 		for  X<Z
 			do
-				X:=X+1
+				X:=Y
 		od
 		
 
