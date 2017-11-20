@@ -3,41 +3,66 @@
  */
 package org.xtext.example.generator;
 
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
-import java.util.List;
-
-
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.xtext.generator.GeneratorContext;
 import org.eclipse.xtext.generator.GeneratorDelegate;
 import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
 import org.eclipse.xtext.util.CancelIndicator;
-import org.eclipse.xtext.validation.CheckMode;
 import org.eclipse.xtext.validation.IResourceValidator;
-import org.eclipse.xtext.validation.Issue;
 import org.xtext.example.ProjetStandaloneSetupGenerated;
+
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Provider;
 
 public class Main {
 
 	public static void main(String[] args) {
+		
+		boolean helpMode = false;
+		
 		String path = "src-gen";
 		if (args.length == 0) {
 			System.err.println("Aborting: no path to EMF resource provided!");
 			return;
+			
+		} else if(args.length == 1 && args[0].equals("man") || args[0].equals("--help")){
+			
+			helpMode = true;
+			
+			System.out.println("Lance le processus de pretty printing des fichiers .wh cibles.\n");
+			
+			System.out.println("> java -jar pretty.jar --src=[file-src]");
+			System.out.println("\tCompile le fichier 'file-src' et genere sa version pretty printee dans le meme repertoire.\n");
+			
+			System.out.println("> java -jar pretty.jar --src=[file-src] --target=[target]");
+			System.out.println("\tCompile le fichier 'file-src' et genere sa version pretty printee dans le dossier cible 'target'.\n");
+			
+			System.out.println("> java -jar pretty.jar --src=[folder-src]");
+			System.out.println("\tCompile l'ensemble des fichiers .wh contenus dans le dossier 'folder-src' et les place dans le meme repertoire.\n");
+			
+			System.out.println("> java -jar pretty.jar --src=[folder-src] --target=[target]");
+			System.out.println("\tCompile l'ensemble des fichiers .wh contenus dans le dossier 'folder-src' et les place dans le dossier 'target'.\n");
+			
+			System.out.println("> java -jar pretty.jar man | java -jar pretty.jar --help");
+			System.out.println("\tAffiche les instructions d'utilisation de la commande et les differents arguments possibles.\n");
+			
 		} else if ( args.length == 2 ) {
+			
+			// TODO: follow commands listed above to extract args successfuly
+			// launch generator with right args/behavior
+			
 			path = args[1];
 		}
-		Injector injector = new ProjetStandaloneSetupGenerated().createInjectorAndDoEMFRegistration();
-		Main main = injector.getInstance(Main.class);
-		main.runGenerator(args[0], path);
+		
+		
+		if(!helpMode){
+			Injector injector = new ProjetStandaloneSetupGenerated().createInjectorAndDoEMFRegistration();
+			Main main = injector.getInstance(Main.class);
+			main.runGenerator(args[0], path);
+		}
 	}
 
 	@Inject
@@ -56,46 +81,6 @@ public class Main {
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
 		Resource resource = set.getResource(URI.createFileURI(string), true);
-
-		/*
-		// TEST 1 : Visiting the content as a tree structure
-		System.out.println("TREE MODE");
-		TreeIterator<EObject> tree = resource.getAllContents();
-		EObject currentNode = null;
-		while((currentNode = tree.next()) != null){
-			System.out.println(currentNode.toString());
-			
-			System.out.println(currentNode.eClass().getName());
-			// System.out.println(currentNode.eGet(currentNode.eContainingFeature()));
-			
-			if(!tree.hasNext()) break;
-		}
-		
-		System.out.println("VALIDATION STARTS ..");
-		
-				
-		// TEST 2 : Visiting the content through 2 for each imbricated
-		
-		System.out.println("LIST MODE");
-		EObject root = resource.getContents().get(0);
-
-		System.out.println(root.getClass().getSimpleName());
-		EList<EObject> subcontent = root.eContents();
-		for (EObject subo : subcontent) {
-			System.out.println("\t" + subo.getClass().getSimpleName());
-		}
-		
-		
-		// Validate the resource
-		List<Issue> list = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
-		if (!list.isEmpty()) {
-			for (Issue issue : list) {
-				System.err.println(issue);
-			}
-			return;
-		}
-
-		*/
 		
 		// Configure and start the generator
 		System.out.println("File is being pretty printed in repository " + path);
