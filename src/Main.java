@@ -28,13 +28,16 @@ import org.xtext.example.ProjetStandaloneSetupGenerated;
 public class Main {
 
 	public static void main(String[] args) {
+		String path = "src-gen";
 		if (args.length == 0) {
 			System.err.println("Aborting: no path to EMF resource provided!");
 			return;
+		} else if ( args.length == 2 ) {
+			path = args[1];
 		}
 		Injector injector = new ProjetStandaloneSetupGenerated().createInjectorAndDoEMFRegistration();
 		Main main = injector.getInstance(Main.class);
-		main.runGenerator(args[0]);
+		main.runGenerator(args[0], path);
 	}
 
 	@Inject
@@ -49,12 +52,12 @@ public class Main {
 	@Inject 
 	private JavaIoFileSystemAccess fileAccess;
 
-	protected void runGenerator(String string) {
+	protected void runGenerator(String string, String path) {
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
 		Resource resource = set.getResource(URI.createFileURI(string), true);
 
-		
+		/*
 		// TEST 1 : Visiting the content as a tree structure
 		System.out.println("TREE MODE");
 		TreeIterator<EObject> tree = resource.getAllContents();
@@ -70,9 +73,9 @@ public class Main {
 		
 		System.out.println("VALIDATION STARTS ..");
 		
-		
+				
 		// TEST 2 : Visiting the content through 2 for each imbricated
-		/*
+		
 		System.out.println("LIST MODE");
 		EObject root = resource.getContents().get(0);
 
@@ -81,7 +84,7 @@ public class Main {
 		for (EObject subo : subcontent) {
 			System.out.println("\t" + subo.getClass().getSimpleName());
 		}
-		*/
+		
 		
 		// Validate the resource
 		List<Issue> list = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
@@ -92,14 +95,16 @@ public class Main {
 			return;
 		}
 
-		
+		*/
 		
 		// Configure and start the generator
-		fileAccess.setOutputPath("src-gen/");
+		System.out.println("File is being pretty printed in repository " + path);
+		fileAccess.setOutputPath(path);
 		GeneratorContext context = new GeneratorContext();
 		context.setCancelIndicator(CancelIndicator.NullImpl);
 		generator.generate(resource, fileAccess, context);
 
-		System.out.println("Code generation finished.");
+		System.out.println("Pretty-printing finished.");
 	}
 }
+
