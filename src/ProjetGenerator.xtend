@@ -63,10 +63,8 @@ class ProjetGenerator extends AbstractGenerator {
 
 	// Pour le type "FUNCTION"
 	def compile(FUNCTION f) {
-		// On affiche le commentaire ";Result of pretty printing process function" 
-		// et le nom de la fonction, puis on compile le contenu de la fonction
+		// On affiche le nom de la fonction, puis on compile le contenu de la fonction
 		'''
-			; Result of pretty printing process
 			function «f.name» :
 			
 				«f.def.compile»
@@ -89,18 +87,14 @@ class ProjetGenerator extends AbstractGenerator {
 
 	// Pour le type INPUT
 	def compile(INPUTS i) {
-		// Rien de particulier pour l'instant
-		'''
-			«i.input»
-		'''
+		// On affiche tous les inputs, séparés par des virgules		
+		'''«i.input»«FOR x : i.inputs», «x.compile»«ENDFOR»'''
 	}
 
 	// Pour le type OUTPUT
 	def compile(OUTPUTS o) {
-		// Rien de particulier pour l'instant
-		'''
-			«o.output»
-		'''
+		//On affiche tous les outputs, séparés par des virgules
+		'''«o.output»«FOR x : o.outputs», «x.compile»«ENDFOR»'''
 	}
 
 	// Pour le type "COMMANDS"
@@ -139,12 +133,12 @@ class ProjetGenerator extends AbstractGenerator {
 
 	// Pour le type "AFFECT"
 	def compile(AFFECT a) {
-		'''«a.variable»«FOR x : a.vars»,«x»«ENDFOR»:=«a.valeur.compile»«FOR y : a.vals»,«y.compile»«ENDFOR»'''
+		//On écrit toutes les variables de gauche séparées par ", " puis " := ", puis tutes les variables de droites séparées par ", "
+		'''«a.variable»«FOR x : a.vars», «x»«ENDFOR»:=«a.valeur.compile»«FOR y : a.vals», «y.compile»«ENDFOR»'''
 	}
 
 	// Pour le type "IF_THEN"
 	def compile(IF_THEN if_then) {
-		// TODO
 		'''
 			if «if_then.cond.compile» then
 				«FOR line : if_then.commands1»
@@ -164,6 +158,7 @@ class ProjetGenerator extends AbstractGenerator {
 		'''nop'''
 	}
 	
+	//Pour le type "FOR_LOOP"
 	def compile(FOR_LOOP fl){
 		'''
 			for «fl.exp.compile» do
@@ -173,6 +168,7 @@ class ProjetGenerator extends AbstractGenerator {
 			od'''
 	}
 	
+	//Pour le type "WHILE"
 	def compile(WHILE w){
 		'''
 			while «w.cond.compile» do
@@ -182,6 +178,7 @@ class ProjetGenerator extends AbstractGenerator {
 			od'''
 	}
 	
+	//Pour le type "FOREACH"
 	def compile(FOREACH fe){
 		'''
 		foreach «fe.exp1.compile» in «fe.exp2.compile» do
@@ -191,10 +188,10 @@ class ProjetGenerator extends AbstractGenerator {
 		od'''	
   	}
 
-	//Plus compliqué -> need bcp de modifications au niveau de la grammaire
+
+	//Pour le type "EXPRESSION"
 	def compile(EXPRESSION e){
 		'''expression'''
-		//TODO
 	}
 
 }
