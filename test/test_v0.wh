@@ -20,13 +20,14 @@ function testWHILE :
 	%
 		nop;
 		
-		X:=nil;Y:=3;Z=7;
+		X:=nil;Y:=3;Z:=7;
 		X,Y,Z := Y,Z,10;
 		
 		while X<Z 
 		do 
 			X:=X+1
 		od
+		%
 write X
 
 function testIFELSE :	
@@ -38,7 +39,7 @@ function testIFELSE :
 		
 		
 		
-		X:=nil;Y:=3;Z=7;
+		X:=nil;Y:=3;Z:=7;
 		X,Y,Z := Y,Z,10;
 		
 		if X>Z then
@@ -46,6 +47,7 @@ function testIFELSE :
 		else 
 		X:=X+1
 		fi
+	%	
 write X
 
 function testFORLOOP :
@@ -54,7 +56,7 @@ function testFORLOOP :
 	%
 		nop;
 		
-		X:=nil;Y:=3;Z=7;
+		X:=nil;Y:=3;Z:=7;
 		X,Y,Z := Y,Z,10;
 		
 		
