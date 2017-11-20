@@ -1,10 +1,10 @@
-function test_IF :
+function testIF :
 //doit rendre 4
 	read X, Y, Z
 	%
-		nop
+		nop;
 		
-		X:=nil;Y:=3;Z=7;
+		X:=nil;Y:=3;Z:=7;
 		X,Y,Z := Y,Z,10;
 		
 		if X<Z
@@ -14,7 +14,7 @@ function test_IF :
 	%
 write X
 
-function test_WHILE :
+function testWHILE :
 //doit rendre 9	
 	read X, Y, Z
 	%
@@ -29,7 +29,7 @@ function test_WHILE :
 		od
 write X
 
-function test_IF_ELSE :	
+function testIFELSE :	
 //doit rendre 4
 	read X, Y, Z
 	%
@@ -48,7 +48,7 @@ function test_IF_ELSE :
 		fi
 write X
 
-function test_FOR_LOOP :
+function testFORLOOP :
 //doit rendre 9
 	read X, Y, Z
 	%
