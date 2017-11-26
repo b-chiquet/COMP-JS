@@ -21,6 +21,11 @@ import org.xtext.example.projet.NOP
 import org.xtext.example.projet.OUTPUTS
 import org.xtext.example.projet.PROGRAM
 import org.xtext.example.projet.WHILE
+import org.xtext.example.projet.EXPRAND
+import org.xtext.example.projet.EXPROR
+import org.xtext.example.projet.EXPRNOT
+import org.xtext.example.projet.EXPREQ
+import org.xtext.example.projet.EXPRSIMPLE
 
 /**
  * Generates code from your model files on save.
@@ -191,6 +196,26 @@ class ProjetGenerator extends AbstractGenerator {
 
 	//Pour le type "EXPRESSION"
 	def compile(EXPRESSION e){
+		'''«e.expand.compile»'''
+	}
+	
+	def compile(EXPRAND e){
+		'''«e.expor.compile»«IF !e.expors.empty» and «FOR line:e.expors»«line.compile»«ENDFOR»«ENDIF»'''
+	}
+	
+	def compile(EXPROR e){
+		'''«e.expnot.compile»«IF !e.expnots.empty» and «FOR line:e.expnots»«line.compile»«ENDFOR»«ENDIF»'''
+	}
+	
+	def compile(EXPRNOT e){
+		'''«e.expeq.compile»'''
+	}
+	
+	def compile(EXPREQ e){
+		'''«e.exp1.compile»«IF !e.exp2.empty» =? «FOR line:e.exp2»«line.compile»«ENDFOR»«ENDIF»'''
+	}
+	
+	def compile(EXPRSIMPLE e){
 		'''expression'''
 	}
 

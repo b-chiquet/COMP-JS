@@ -64,42 +64,30 @@ AFFECT:
 
 // -- EXPRESSIONS -- 
 EXPRESSION : 
-	EXPRAND
+	expand=EXPRAND
 ;
 
+//logiques
 EXPRAND:
-	 expor=EXPROR (=> AND expors+=EXPRAND )*
+	 expor=EXPROR (=> 'and' expors+=EXPRAND )*
 ;
 EXPROR:
-	 expnot=EXPRNOT (=> OR expnots+=EXPROR )*
+	 expnot=EXPRNOT (=> 'or' expnots+=EXPROR )*
 ;
 EXPRNOT:
-	NOT expeq=EXPREQ | expeq=EXPREQ
+	(n='not')? expeq=EXPREQ
 ;
 EXPREQ:
-	exp1=EXPRSIMPLE (EQ exp2+=EXPRSIMPLE)? 
+	exp1=EXPRSIMPLE ('=?' exp2+=EXPRSIMPLE)? 
 ;
 
-AND:
-	'and'
-;
-OR:
-	'or'
-;
-NOT:
-	'not'
-;
-EQ:
-	'=?'
-;
-
+//simples
 EXPRSIMPLE:
 	val=("nil" | VARIABLE | SYMBOLE | NOMBRE)  | 
 	'(' 'cons' lexpr=LEXPR ')' | '(' 'list' lexpr=LEXPR ')' | 
 	'(' 'hd' expr=EXPRESSION ')' | '(' 'tl' expr=EXPRESSION ')' |
 	'(' sym=SYMBOLE lexpr=LEXPR ')'
 ;
-
 LEXPR:
 	expr = EXPRESSION ( lexpr=LEXPR)?
 ;
