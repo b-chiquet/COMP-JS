@@ -64,23 +64,20 @@ AFFECT:
 
 // -- EXPRESSIONS -- 
 EXPRESSION : 
-	(EXPRSIMPLE |=> EXPRAND)
+	EXPRAND
 ;
 
 EXPRAND:
-	expor=EXPROR AND expands+=EXPRAND | => expor=EXPROR
+	 expor=EXPROR (=> AND expors+=EXPRAND )*
 ;
-
 EXPROR:
-	expnot=EXPRNOT OR expands+=EXPRAND | => expnot=EXPRNOT
+	 expnot=EXPRNOT (=> OR expnots+=EXPROR )*
 ;
-
 EXPRNOT:
-	NOT expeq=EXPREQ | => expeq=EXPREQ
+	NOT expeq=EXPREQ | expeq=EXPREQ
 ;
-
 EXPREQ:
-	exp1=EXPRSIMPLE EQ exp2=EXPRSIMPLE | => '(' exp=EXPRESSION ')'
+	exp1=EXPRSIMPLE (EQ exp2+=EXPRSIMPLE)? 
 ;
 
 AND:
@@ -126,3 +123,92 @@ terminal NOMBRE :
 ;
 
 //-------------------------------------------------------------------- 
+
+
+
+
+/* --------------------- GRAMMAIRE PRIMITIVE ----------------------- */
+/*
+PROGRAM :
+	(functions += FUNCTION)*
+;
+
+FUNCTION :
+	"function" name=NAME ":" def=DEFINITION
+;
+  
+DEFINITION :
+	("read" inputs=INPUTS)
+	("%" code=COMMANDS "%")
+	("write" outputs=OUTPUTS)
+;  
+
+INPUTS:
+	input="variables entree"
+;
+
+
+OUTPUTS:
+	output="variables sortie"
+;
+  
+COMMANDS : // Plusieurs commandes d'affilé, séparées d'un ;
+	command=COMMAND (';' commands+=COMMAND)*
+;
+
+COMMAND : 
+	IF_THEN | NOP | AFFECT | FOR_LOOP | WHILE | FOREACH
+;
+
+// LES DIFFERENTES COMMANDES
+
+
+IF_THEN:
+	'if' cond=EXPRESSION 'then' comm+=COMMANDS (=>'else' commands2+=COMMANDS)? 'fi'
+;
+
+
+NOP:
+	nop = "nop"
+;
+
+AFFECT :
+	(variable = VARIABLE) ":= valeur"
+;
+
+FOR_LOOP :
+	"for" exp=EXPRESSION "do" commands+=COMMANDS "od"
+;
+
+WHILE :
+	("while" cond=CONDITION "do" commands=COMMANDS "od")
+;
+
+FOREACH : 
+	("foreach" exp1=EXPRESSION "in" exp2=EXPRESSION "do" commands=COMMANDS "od")
+;
+
+CONDITION :
+	"condition"
+;
+
+EXPRESSION : 
+	exp="expression"
+;
+
+// TERMINAUX
+terminal VARIABLE:
+	'A'..'Z'('A'..'Z'|'a'..'z')*
+;
+	
+terminal NAME:
+	'a'..'z'('A'..'Z'|'a'..'z'|'0'..'9')*
+	((('-'|'+'|'.'|'/'|'_'|'&')|"->")('A'..'Z'|'a'..'z'|'0'..'9')+)*
+	//('!'|'?')?
+;
+
+terminal NUMBER:
+	('1'..'9')('0'..'9')*
+;
+*/
+/*------------------------------------------------------------------- */
