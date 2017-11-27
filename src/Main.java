@@ -29,7 +29,6 @@ public class Main {
 		boolean repoMode = true;
 		String source = "";
 		String path = "src-gen";
-		System.out.println(args.length);
 		if (args.length == 0) {
 			System.err.println("Aborting: no path to EMF resource provided!");
 			return;
@@ -45,13 +44,13 @@ public class Main {
 			
 			System.out.println("> java -jar pretty.jar --src=[file-src] --target=[target]");
 			System.out.println("\tCompile le fichier 'file-src' et genere sa version pretty printee dans le dossier cible 'target'.\n");
-			/*
+			
 			System.out.println("> java -jar pretty.jar --src=[folder-src]");
 			System.out.println("\tCompile l'ensemble des fichiers .wh contenus dans le dossier 'folder-src' et les place dans le meme repertoire.\n");
 			
 			System.out.println("> java -jar pretty.jar --src=[folder-src] --target=[target]");
 			System.out.println("\tCompile l'ensemble des fichiers .wh contenus dans le dossier 'folder-src' et les place dans le dossier 'target'.\n");
-			*/
+			
 			System.out.println("> java -jar pretty.jar man | java -jar pretty.jar --help");
 			System.out.println("\tAffiche les instructions d'utilisation de la commande et les differents arguments possibles.\n");
 			
@@ -82,7 +81,7 @@ public class Main {
 					File folder = new File(source);
 					for (File f : folder.listFiles()) {
 						System.out.println(f.getPath());
-						main.runGenerator(f.getPath(), path);
+						main.runGenerator(f.getPath(), path+"/"+f.getName());
 					}
 				} else {
 					main.runGenerator(source, path);
