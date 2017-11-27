@@ -3,6 +3,10 @@
  */
 package org.xtext.example.generator;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -22,8 +26,10 @@ public class Main {
 	public static void main(String[] args) {
 		
 		boolean helpMode = false;
-		
+		boolean repoMode = true;
+		String source = "";
 		String path = "src-gen";
+		System.out.println(args.length);
 		if (args.length == 0) {
 			System.err.println("Aborting: no path to EMF resource provided!");
 			return;
@@ -39,29 +45,49 @@ public class Main {
 			
 			System.out.println("> java -jar pretty.jar --src=[file-src] --target=[target]");
 			System.out.println("\tCompile le fichier 'file-src' et genere sa version pretty printee dans le dossier cible 'target'.\n");
-			
+			/*
 			System.out.println("> java -jar pretty.jar --src=[folder-src]");
 			System.out.println("\tCompile l'ensemble des fichiers .wh contenus dans le dossier 'folder-src' et les place dans le meme repertoire.\n");
 			
 			System.out.println("> java -jar pretty.jar --src=[folder-src] --target=[target]");
 			System.out.println("\tCompile l'ensemble des fichiers .wh contenus dans le dossier 'folder-src' et les place dans le dossier 'target'.\n");
-			
+			*/
 			System.out.println("> java -jar pretty.jar man | java -jar pretty.jar --help");
 			System.out.println("\tAffiche les instructions d'utilisation de la commande et les differents arguments possibles.\n");
 			
-		} else if ( args.length == 2 ) {
-			
-			// TODO: follow commands listed above to extract args successfuly
-			// launch generator with right args/behavior
-			
-			path = args[1];
+		} else {
+			ArrayList<String> options = new ArrayList<String>(Arrays.asList(args));
+			for ( String s : options ) {
+				if ( s.split("=")[0].equalsIgnoreCase("--src")) {
+					source = s.split("=")[1];
+					if ( source.contains(".")) {
+						repoMode = false;
+					}
+				} else if (s.split("=")[0].equalsIgnoreCase("--target")) {
+					path = s.split("=")[1];
+				} else {
+					System.out.println("wrong usage, use --help or man to see available options.");
+				}
+			}
 		}
 		
 		
 		if(!helpMode){
 			Injector injector = new ProjetStandaloneSetupGenerated().createInjectorAndDoEMFRegistration();
 			Main main = injector.getInstance(Main.class);
-			main.runGenerator(args[0], path);
+			if (source.equals("")) {
+				System.out.println("Generation failed, use --help or man.");
+			} else {
+				if ( repoMode) {
+					File folder = new File(source);
+					for (File f : folder.listFiles()) {
+						System.out.println(f.getPath());
+						main.runGenerator(f.getPath(), path);
+					}
+				} else {
+					main.runGenerator(source, path);
+				}
+			}
 		}
 	}
 
@@ -87,9 +113,13 @@ public class Main {
 		fileAccess.setOutputPath(path);
 		GeneratorContext context = new GeneratorContext();
 		context.setCancelIndicator(CancelIndicator.NullImpl);
+		System.out.println(resource);
+		System.out.println(fileAccess);
+		System.out.println(context);
 		generator.generate(resource, fileAccess, context);
 
 		System.out.println("Pretty-printing finished.");
 	}
 }
+
 
