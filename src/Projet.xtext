@@ -78,18 +78,18 @@ EXPRNOT:
 	(n='not')? expeq=EXPREQ
 ;
 EXPREQ:
-	exp1=EXPRSIMPLE ('=?' exp2+=EXPRSIMPLE)? 
+	(exp1=EXPRSIMPLE ('=?' exp2+=EXPRSIMPLE)?) | '(' exp=EXPRESSION')'
 ;
 
 //simples
 EXPRSIMPLE:
-	val=("nil" | VARIABLE | SYMBOLE | NOMBRE)  | 
-	'(' 'cons' lexpr=LEXPR ')' | '(' 'list' lexpr=LEXPR ')' | 
-	'(' 'hd' expr=EXPRESSION ')' | '(' 'tl' expr=EXPRESSION ')' |
+	valeur=("nil" | VARIABLE | SYMBOLE | NOMBRE)  | 
+	'(' cons='cons' lexpr=LEXPR ')' | '(' list='list' lexpr=LEXPR ')' | 
+	'(' hd='hd' expr=EXPRESSION ')' | '(' tl='tl' expr=EXPRESSION ')' |
 	'(' sym=SYMBOLE lexpr=LEXPR ')'
 ;
 LEXPR:
-	expr = EXPRESSION ( lexpr=LEXPR)?
+	expr=EXPRESSION ( lexpr=LEXPR)?
 ;
 
 

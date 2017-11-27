@@ -26,6 +26,7 @@ import org.xtext.example.projet.EXPROR
 import org.xtext.example.projet.EXPRNOT
 import org.xtext.example.projet.EXPREQ
 import org.xtext.example.projet.EXPRSIMPLE
+import org.xtext.example.projet.LEXPR
 
 /**
  * Generates code from your model files on save.
@@ -70,7 +71,7 @@ class ProjetGenerator extends AbstractGenerator {
 	def compile(FUNCTION f) {
 		// On affiche le nom de la fonction, puis on compile le contenu de la fonction
 		'''
-			function «f.name» :
+			function «f.name»:
 			
 				«f.def.compile»
 		'''
@@ -106,9 +107,9 @@ class ProjetGenerator extends AbstractGenerator {
 	def compile(COMMANDS c) {
 		// Pour les commandes (IF/NOP/AFFECT/FOR/WHILE/EACH)
 		'''
-			«c.command.compile»«IF !c.commands.empty»;«ENDIF»
+			«c.command.compile»«IF !c.commands.empty» ;«ENDIF»
 			«FOR line : c.commands»
-				«line.compile»«IF line != c.commands.last»;«ENDIF»
+				«line.compile»«IF line != c.commands.last» ;«ENDIF»
 			«ENDFOR»
 		'''
 	}
@@ -139,7 +140,7 @@ class ProjetGenerator extends AbstractGenerator {
 	// Pour le type "AFFECT"
 	def compile(AFFECT a) {
 		//On écrit toutes les variables de gauche séparées par ", " puis " := ", puis tutes les variables de droites séparées par ", "
-		'''«a.variable»«FOR x : a.vars», «x»«ENDFOR»:=«a.valeur.compile»«FOR y : a.vals», «y.compile»«ENDFOR»'''
+		'''«a.variable»«FOR x : a.vars», «x»«ENDFOR» := «a.valeur.compile»«FOR y : a.vals», «y.compile»«ENDFOR»'''
 	}
 
 	// Pour le type "IF_THEN"
@@ -204,19 +205,43 @@ class ProjetGenerator extends AbstractGenerator {
 	}
 	
 	def compile(EXPROR e){
-		'''«e.expnot.compile»«IF !e.expnots.empty» and «FOR line:e.expnots»«line.compile»«ENDFOR»«ENDIF»'''
+		'''«e.expnot.compile»«IF !e.expnots.empty» or «FOR line:e.expnots»«line.compile»«ENDFOR»«ENDIF»'''
 	}
 	
 	def compile(EXPRNOT e){
-		'''«e.expeq.compile»'''
+		if(e.n !== null){
+			return '''not «e.expeq.compile»'''
+		}else{
+			return '''«e.expeq.compile»'''
+		}
 	}
 	
 	def compile(EXPREQ e){
-		'''«e.exp1.compile»«IF !e.exp2.empty» =? «FOR line:e.exp2»«line.compile»«ENDFOR»«ENDIF»'''
+		if(e.exp1 !== null){
+			return '''«e.exp1.compile»«IF !e.exp2.empty» =? «FOR line:e.exp2»«line.compile»«ENDFOR»«ENDIF»'''
+		}else{
+			'''(«e.exp.compile»)'''
+		}
 	}
 	
 	def compile(EXPRSIMPLE e){
-		'''expression'''
+		if(e.valeur !== null){
+			return '''«e.valeur.toString»'''
+		}else if(e.cons !== null){
+			return '''(cons «e.lexpr.compile»)'''
+		}else if(e.list !== null){
+			return '''(list «e.lexpr.compile»)'''
+		}else if(e.hd !== null){
+			return '''(hd «e.expr.compile»)'''
+		}else if(e.tl !== null){
+			return '''(tl «e.expr.compile»)'''
+		}else if(e.sym !== null){
+			return '''(«e.sym.toString» «e.lexpr.compile»)'''
+		}
+	}
+	
+	def compile(LEXPR e){
+		'''«e.expr.compile»«IF e.lexpr !== null»«e.lexpr.compile»«ENDIF»'''
 	}
 
 }
