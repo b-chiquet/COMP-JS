@@ -1,7 +1,7 @@
 function exampleFunction :
   read A
    %
-if expression
+if A
 then nop
 fi
 %
@@ -11,11 +11,11 @@ write B
 function secondExampleFunction :
   read A
    %
-if expression
+if not A
 then nop
 fi;
 
-foreach expression in expression do nop;nop   od;
+foreach A=?B in (A and B or C) do nop;nop   od;
 
 TestVariable := 12
 ;
@@ -23,3 +23,4 @@ AutreVar := TestVariable
 
 %
 write B
+
