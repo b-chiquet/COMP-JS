@@ -16,27 +16,27 @@ public class funcEntry {
 	//table des variables de la fonction
 	HashMap<String,String> tabVar;
 	
-	funcEntry(int in, int out){
-		this.in = in;
-		this.out = out;
+	funcEntry(){
+		this.in = 0;
+		this.out = 0;
 		this.code = new ArrayList<code3A>();
 		this.tabVar = new HashMap<String,String>();
 	}
 	
-	void addCode(code3A instruction){
+	public void addCode(code3A instruction){
 		this.code.add(instruction);
 	}
 	
-	void addVal(String id, String val){
+	public void addVal(String id, String val){
 		this.tabVar.put(id, val);
 	}
 	
-	void setIn(int in){
-		this.in = in;
+	public void addIn(){
+		this.in++;
 	}
 	
-	void setOut(int out){
-		this.out = out;
+	public void addOut(){
+		this.out++;
 	}
 	
 	public String toString(){

@@ -16,7 +16,7 @@ public class code3A {
 		this.left = left;
 		this.right = right;
 	}
-	
+
 	public String toString(){
 		return "<"+op+", "+res+", "+left+", "+right+">";
 	}

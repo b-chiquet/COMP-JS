@@ -34,17 +34,24 @@ import org.xtext.example.projet.LEXPR
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class ProjetGenerator extends AbstractGenerator {
-
+	
+	//table des fonctions
+	static private funcTab table;
+	int num;
+	funcEntry nouvelleFunc;
+	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-
+		this.table = new funcTab();
+		num=0;
 		// Pour toutes les fonctions du fichier
-		for (f : resource.allContents.toIterable.filter(typeof(FUNCTION))) {
+		/*for (f : resource.allContents.toIterable.filter(typeof(FUNCTION))) {
 			// On génère un fichier pour chaque fonction présente dans le fichier
 			fsa.generateFile(
 				"components/" + f.name + ".whp",
-				f.compile
+				f.compile	
 			)
-		}
+			
+		}*/
 
 		// Pour chaque fichier
 		for (d : resource.allContents.toIterable.filter(typeof(PROGRAM))) {
@@ -53,6 +60,8 @@ class ProjetGenerator extends AbstractGenerator {
 				"file.whp",
 				d.compile
 			)
+			
+			println(table.toString());
 		}
 	}
 
@@ -62,7 +71,6 @@ class ProjetGenerator extends AbstractGenerator {
 		'''
 			«FOR f : d.functions»
 				«f.compile»
-				
 			«ENDFOR»
 		'''
 	}
@@ -72,7 +80,6 @@ class ProjetGenerator extends AbstractGenerator {
 		// On affiche le nom de la fonction, puis on compile le contenu de la fonction
 		'''
 			function «f.name»:
-			
 				«f.def.compile»
 		'''
 	// f.def.compile est écrit après une tabulation, ce qui va indenter tout le
@@ -82,6 +89,9 @@ class ProjetGenerator extends AbstractGenerator {
 	// Pour le type "DEFINTION"
 	def compile(DEFINITION d) {
 		// on affiche read input, puis le code intérieur indenté, puis write output
+		nouvelleFunc = new funcEntry()
+		table.addFunc("f"+num,nouvelleFunc)
+		num++
 		'''
 			read «d.inputs.compile»
 			%
@@ -93,12 +103,15 @@ class ProjetGenerator extends AbstractGenerator {
 
 	// Pour le type INPUT
 	def compile(INPUTS i) {
+		nouvelleFunc.addIn();
 		// On affiche tous les inputs, séparés par des virgules		
 		'''«i.input»«FOR x : i.inputs», «x.compile»«ENDFOR»'''
+		
 	}
 
 	// Pour le type OUTPUT
 	def compile(OUTPUTS o) {
+		nouvelleFunc.addOut();
 		//On affiche tous les outputs, séparés par des virgules
 		'''«o.output»«FOR x : o.outputs», «x.compile»«ENDFOR»'''
 	}
