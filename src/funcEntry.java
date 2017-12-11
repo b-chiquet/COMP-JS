@@ -30,4 +30,13 @@ public class funcEntry {
 	void addVal(String id, String val){
 		this.tabVar.put(id, val);
 	}
+	
+	public String toString(){
+		String res="";
+		res+=in +" entrées, "+out+" sorties ;";
+		for (code3A ligne : code){
+			
+		}	
+		return res;
+	}
 }
