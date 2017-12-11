@@ -1,35 +1,22 @@
-function test :
-	read X, Y
-	%
-		nop;
+function test : read X, Y	%
+		nop; 		
+		
+		
+		
+		
+		
 		
 		
 		X:=nil;Y:=nil;
-		X,Y,Z := Y,Z,nil;
-		
-		
-		if X=?Y 
-		then
-			X:=Y
-		fi;
+X,Y,Z := Y,Z,nil;
+if X=?Y 
+then X:=Y fi;
 		
 		while not X 
-		do 
-			nop
-		od;
+		do 			nop		od;
 		
 		if X =? Y
-		then	
-		 nop
-		else 
-			nop
-		fi;
-		
-		for nil 
-		do
-			nop
-		od;
-		
-		X:=12
+		then nop else nop fi;	for nil do	nop
+		od;	X:=12
 	% 
 	write X
