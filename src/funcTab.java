@@ -1,6 +1,7 @@
 package org.xtext.example.generator;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Classe de table des fonctions
@@ -21,5 +22,13 @@ public class funcTab {
 	
 	funcEntry getFunc(String nom){
 		return this.tab.get(nom);
+	}
+	
+	public String toString(){
+		String res ="";
+		for (String key : this.tab.keySet()) {
+			res+="\n\n"+key+":"+this.tab.get(key).toString();
+		}
+		return res;
 	}
 }
