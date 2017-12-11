@@ -31,12 +31,27 @@ public class funcEntry {
 		this.tabVar.put(id, val);
 	}
 	
+	void setIn(int in){
+		this.in = in;
+	}
+	
+	void setOut(int out){
+		this.out = out;
+	}
+	
 	public String toString(){
 		String res="";
-		res+=in +" entrées, "+out+" sorties ;";
+		res+=in +" entrées, "+out+" sorties ; ";
+		res+="Table Var : { ";
+		for (String key: tabVar.keySet()){
+			res+="<"+key +", "+ tabVar.get(key) + ">";
+		}
+		
+		res+=" } Code : { ";
 		for (code3A ligne : code){
-			
+			res+=ligne.toString() + ", ";			
 		}	
+		res+=" }";
 		return res;
 	}
 }

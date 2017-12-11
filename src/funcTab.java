@@ -27,7 +27,7 @@ public class funcTab {
 	public String toString(){
 		String res ="";
 		for (String key : this.tab.keySet()) {
-			res+="\n\n"+key+":"+this.tab.get(key).toString();
+			res+="\n\n"+key+" : "+this.tab.get(key).toString();
 		}
 		return res;
 	}
