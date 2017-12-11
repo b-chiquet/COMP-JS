@@ -13,14 +13,14 @@ public class funcEntry {
 	int in,out;
 	//liste des instructions en code 3@
 	ArrayList<code3A> code;
-	//table des valeurs de la fonction
-	HashMap<String,String> tabVal;
+	//table des variables de la fonction
+	HashMap<String,String> tabVar;
 	
 	funcEntry(int in, int out){
 		this.in = in;
 		this.out = out;
 		this.code = new ArrayList<code3A>();
-		this.tabVal = new HashMap<String,String>();
+		this.tabVar = new HashMap<String,String>();
 	}
 	
 	void addCode(code3A instruction){
@@ -28,6 +28,6 @@ public class funcEntry {
 	}
 	
 	void addVal(String id, String val){
-		this.tabVal.put(id, val);
+		this.tabVar.put(id, val);
 	}
 }
