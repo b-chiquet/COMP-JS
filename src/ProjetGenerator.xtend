@@ -37,8 +37,11 @@ class ProjetGenerator extends AbstractGenerator {
 	
 	//table des fonctions
 	static private funcTab table;
+	//numéro de fonction
 	int num;
+	//funcEntry utilisé pour ajouter des fonctions à la funcTab
 	funcEntry nouvelleFunc;
+	String res
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		this.table = new funcTab();
@@ -50,7 +53,6 @@ class ProjetGenerator extends AbstractGenerator {
 				"components/" + f.name + ".whp",
 				f.compile	
 			)
-			
 		}*/
 
 		// Pour chaque fichier
@@ -60,12 +62,11 @@ class ProjetGenerator extends AbstractGenerator {
 				"file.whp",
 				d.compile
 			)
-			
-			println(table.toString());
 		}
+		println(table.toString());
 	}
 
-	// Pour le type "Domainmodel", qui représente tout le fichier
+	// Pour le type "PROGRAM", qui représente tout le programme
 	def compile(PROGRAM d) {
 		// On compile toutes les fonctions comprises dans le fichier une à une
 		'''
@@ -104,6 +105,7 @@ class ProjetGenerator extends AbstractGenerator {
 	// Pour le type INPUT
 	def compile(INPUTS i) {
 		nouvelleFunc.addIn();
+		nouvelleFunc.addVar(i.input);
 		// On affiche tous les inputs, séparés par des virgules		
 		'''«i.input»«FOR x : i.inputs», «x.compile»«ENDFOR»'''
 		
@@ -152,12 +154,14 @@ class ProjetGenerator extends AbstractGenerator {
 
 	// Pour le type "AFFECT"
 	def compile(AFFECT a) {
+		nouvelleFunc.addVar(a.variable);
 		//On écrit toutes les variables de gauche séparées par ", " puis " := ", puis tutes les variables de droites séparées par ", "
-		'''«a.variable»«FOR x : a.vars», «x»«ENDFOR» := «a.valeur.compile»«FOR y : a.vals», «y.compile»«ENDFOR»'''
+		'''«a.variable»«FOR x : a.vars», «x»«nouvelleFunc.addVar(x)»«ENDFOR» := «a.valeur.compile»«FOR y : a.vals», «y.compile»«ENDFOR»'''
 	}
 
 	// Pour le type "IF_THEN"
 	def compile(IF_THEN if_then) {
+		nouvelleFunc.addCode("if","_","_","_");
 		'''
 			if «if_then.cond.compile» then
 				«FOR line : if_then.commands1»
@@ -174,11 +178,13 @@ class ProjetGenerator extends AbstractGenerator {
 
 	// Pour le type "NOP"
 	def compile(NOP n) {
+		nouvelleFunc.addCode("nop","_","_","_");
 		'''nop'''
 	}
 	
 	//Pour le type "FOR_LOOP"
 	def compile(FOR_LOOP fl){
+		nouvelleFunc.addCode("for","_","","");
 		'''
 			for «fl.exp.compile» do
 				«FOR line : fl.commands»
@@ -189,6 +195,7 @@ class ProjetGenerator extends AbstractGenerator {
 	
 	//Pour le type "WHILE"
 	def compile(WHILE w){
+		nouvelleFunc.addCode("while","_","","");
 		'''
 			while «w.cond.compile» do
 				«FOR line : w.commands»
@@ -199,6 +206,7 @@ class ProjetGenerator extends AbstractGenerator {
 	
 	//Pour le type "FOREACH"
 	def compile(FOREACH fe){
+		nouvelleFunc.addCode("foreach","_","_","_");
 		'''
 		foreach «fe.exp1.compile» in «fe.exp2.compile» do
 			«FOR line : fe.commands»
@@ -214,15 +222,17 @@ class ProjetGenerator extends AbstractGenerator {
 	}
 	
 	def compile(EXPRAND e){
-		'''«e.expor.compile»«IF !e.expors.empty» and «FOR line:e.expors»«line.compile»«ENDFOR»«ENDIF»'''
+		'''«e.expor.compile»«IF !e.expors.empty»«nouvelleFunc.addCode("and","_","_","_")» and «FOR line:e.expors»«line.compile»«ENDFOR»«ENDIF»'''
 	}
 	
 	def compile(EXPROR e){
-		'''«e.expnot.compile»«IF !e.expnots.empty» or «FOR line:e.expnots»«line.compile»«ENDFOR»«ENDIF»'''
+		
+		'''«e.expnot.compile»«IF !e.expnots.empty»«nouvelleFunc.addCode("or","_","_","_")» or «FOR line:e.expnots»«line.compile»«ENDFOR»«ENDIF»'''
 	}
 	
 	def compile(EXPRNOT e){
 		if(e.n !== null){
+			nouvelleFunc.addCode("not","_","_","_");
 			return '''not «e.expeq.compile»'''
 		}else{
 			return '''«e.expeq.compile»'''
@@ -231,24 +241,33 @@ class ProjetGenerator extends AbstractGenerator {
 	
 	def compile(EXPREQ e){
 		if(e.exp1 !== null){
-			return '''«e.exp1.compile»«IF !e.exp2.empty» =? «FOR line:e.exp2»«line.compile»«ENDFOR»«ENDIF»'''
+			return '''«e.exp1.compile»«IF !e.exp2.empty»«nouvelleFunc.addCode("=?","","_","_")» =? «FOR line:e.exp2»«line.compile»«ENDFOR»«ENDIF»'''
 		}else{
-			'''(«e.exp.compile»)'''
+			return '''(«e.exp.compile»)'''
 		}
 	}
 	
 	def compile(EXPRSIMPLE e){
 		if(e.valeur !== null){
-			return '''«e.valeur.toString»'''
+			res = e.valeur.toString
+			if(res=="nil"){
+				nouvelleFunc.addCode("nil","_","_","_")
+			}
+			return res
 		}else if(e.cons !== null){
+			nouvelleFunc.addCode("cons","_","_","_");
 			return '''(cons «e.lexpr.compile»)'''
 		}else if(e.list !== null){
+			nouvelleFunc.addCode("list","_","_","_");
 			return '''(list «e.lexpr.compile»)'''
 		}else if(e.hd !== null){
+			nouvelleFunc.addCode("hd","_","_","_");
 			return '''(hd «e.expr.compile»)'''
 		}else if(e.tl !== null){
+			nouvelleFunc.addCode("tl","_","_","_");
 			return '''(tl «e.expr.compile»)'''
 		}else if(e.sym !== null){
+			nouvelleFunc.addCode("sym","_","_","_");
 			return '''(«e.sym.toString» «e.lexpr.compile»)'''
 		}
 	}

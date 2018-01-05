@@ -15,20 +15,30 @@ public class funcEntry {
 	ArrayList<code3A> code;
 	//table des variables de la fonction
 	HashMap<String,String> tabVar;
+	//numéro de var
+	int num;
 	
-	funcEntry(){
+	public funcEntry(){
 		this.in = 0;
 		this.out = 0;
 		this.code = new ArrayList<code3A>();
 		this.tabVar = new HashMap<String,String>();
 	}
 	
-	public void addCode(code3A instruction){
-		this.code.add(instruction);
+	public String getVar(String key){
+		return this.tabVar.get(key);
 	}
 	
-	public void addVal(String id, String val){
-		this.tabVar.put(id, val);
+	public void addCode(String op, String res, String left, String right){
+		code3A c = new code3A(op,res,left,right);
+		this.code.add(c);
+	}
+	
+	public void addVar(String key){
+		if(!this.tabVar.containsKey(key)){
+			this.tabVar.put(key, Integer.toString(num));
+			num++;
+		}
 	}
 	
 	public void addIn(){

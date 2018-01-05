@@ -12,15 +12,15 @@ public class funcTab {
 	//table des fonctions : hash map de clés/entrées de fonction
 	HashMap<String,funcEntry> tab;
 	
-	funcTab(){
+	public funcTab(){
 		this.tab = new HashMap<String,funcEntry>();
 	}
 	
-	void addFunc(String nom, funcEntry fonction){
+	public void addFunc(String nom, funcEntry fonction){
 		this.tab.put(nom, fonction);
 	}
 	
-	funcEntry getFunc(String nom){
+	public funcEntry getFunc(String nom){
 		return this.tab.get(nom);
 	}
 	

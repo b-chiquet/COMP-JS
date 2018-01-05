@@ -83,7 +83,7 @@ EXPREQ:
 
 //simples
 EXPRSIMPLE:
-	valeur=("nil" | VARIABLE | SYMBOLE | NOMBRE)  | 
+	valeur=("nil" | VARIABLE | SYMBOLE)  | 
 	'(' cons='cons' lexpr=LEXPR ')' | '(' list='list' lexpr=LEXPR ')' | 
 	'(' hd='hd' expr=EXPRESSION ')' | '(' tl='tl' expr=EXPRESSION ')' |
 	'(' sym=SYMBOLE lexpr=LEXPR ')'
@@ -104,10 +104,6 @@ terminal SYMBOLE :
 	('a'..'z')(('0'..'9')|('A'..'Z')|('a'..'z'))*
 	((('-'|'+'|'.'|'/'|'_'|'&')|"->")('A'..'Z'|'a'..'z'|'0'..'9')+)*
 	('!'|'?')?
-;
-
-terminal NOMBRE :
-	'0'|('1'..'9')('0'..'9')*
 ;
 
 //-------------------------------------------------------------------- 
