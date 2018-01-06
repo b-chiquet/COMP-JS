@@ -1,0 +1,23 @@
+function p:read X,Y % 
+Y:= nil;
+W := X;
+X := (O or R);
+Y := C and V; 
+Z := (hd A);
+A := B =? C;
+while A do
+	if B then
+		nop
+	else
+		nop
+	fi
+od;
+for C do
+	foreach D in E do
+		nop
+	od
+od
+%write 
+	 Y
+  	
+        

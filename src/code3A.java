@@ -20,6 +20,9 @@ public class code3A {
 	public void setOp(String op){
 		this.op = op;
 	}
+	public String getOp(){
+		return this.op;
+	}
 	
 	public void setRes(String res){
 		this.res = res;

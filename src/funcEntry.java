@@ -29,9 +29,10 @@ public class funcEntry {
 		return this.tabVar.get(key);
 	}
 	
-	public void addCode(String op, String res, String left, String right){
+	public code3A addCode(String op, String res, String left, String right){
 		code3A c = new code3A(op,res,left,right);
 		this.code.add(c);
+		return c;
 	}
 	
 	public void addVar(String key){
