@@ -6,21 +6,21 @@ package org.xtext.example.generator;
  *
  */
 public class code3A {
-	String op;
+	Op op;
 	String res;
 	String left,right;
 	
-	public code3A(String op, String res, String left, String right){
+	public code3A(Op op, String res, String left, String right){
 		this.op = op;
 		this.res = res;
 		this.left = left;
 		this.right = right;
 	}
 	
-	public void setOp(String op){
+	public void setOp(Op op){
 		this.op = op;
 	}
-	public String getOp(){
+	public Op getOp(){
 		return this.op;
 	}
 	
@@ -37,6 +37,6 @@ public class code3A {
 	}
 
 	public String toString(){
-		return "<"+op+", "+res+", "+left+", "+right+">";
+		return "<"+op.toString()+", "+res+", "+left+", "+right+">";
 	}
 }

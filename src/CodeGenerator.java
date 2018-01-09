@@ -94,16 +94,17 @@ public class CodeGenerator {
 
 	// Pour le type "AFFECT"
 	private void compile(AFFECT a) {
-		code3A instr = nouvelleFunc.addCode("_","_","_","_");
+		code3A instr = nouvelleFunc.addCode(Op.NONE,"_","_","_");
 		nouvelleFunc.addVar(a.getVariable());
-		instr.setRes(a.getVariable());
-		this.compile(a.getValeur(),instr);
+		//@ resultat = id(a.variable)
+		instr.setRes(nouvelleFunc.getVar(a.getVariable()));
+		instr.setLeft(this.compile(a.getValeur(),instr));
 	}
 
 	// Pour le type "IF_THEN"
 	private void compile(IF_THEN if_then) {
-		code3A instr = nouvelleFunc.addCode("if","_","_","_");
-		this.compile(if_then.getCond(),instr);
+		code3A instr = nouvelleFunc.addCode(Op.IF,"_","_","_");
+		instr.setLeft(this.compile(if_then.getCond(),instr));
 		for(COMMANDS comm : if_then.getCommands1()){
 			this.compile(comm);
 		}
@@ -114,117 +115,143 @@ public class CodeGenerator {
 
 	// Pour le type "NOP"
 	private void compile(NOP n) {
-		nouvelleFunc.addCode("nop","_","_","_");
+		code3A instr = nouvelleFunc.addCode(Op.NOP,"_","_","_");
 	}
 	
 	//Pour le type "FOR_LOOP"
 	private void compile(FOR_LOOP fl){
-		nouvelleFunc.addCode("for","_","_","_");
+		code3A instr = nouvelleFunc.addCode(Op.FOR,"_","_","_");
+		instr.setLeft(this.compile(fl.getExp(),instr));
+		for(COMMANDS comm : fl.getCommands()){
+			this.compile(comm);
+		}
 	}
 	
 	//Pour le type "WHILE"
 	private void compile(WHILE w){
-		nouvelleFunc.addCode("while","_","_","_");
+		code3A instr = nouvelleFunc.addCode(Op.WHILE,"_","_","_");
+		instr.setLeft(this.compile(w.getCond(),instr));
+		for(COMMANDS comm : w.getCommands()){
+			this.compile(comm);
+		}
 	}
 	
 	//Pour le type "FOREACH"
 	private void compile(FOREACH fe){
-		nouvelleFunc.addCode("foreach","_","_","_");
+		code3A instr = nouvelleFunc.addCode(Op.FOREACH,"_","_","_");
+		instr.setLeft(this.compile(fe.getExp1(),instr));
+		instr.setRight(this.compile(fe.getExp2(),instr));
+		for(COMMANDS comm : fe.getCommands()){
+			this.compile(comm);
+		}
   	}
 
 
 	//Pour le type "EXPRESSION"
-	private void compile(EXPRESSION e,code3A instr){
-		this.compile(e.getExpand(),instr);
+	private String compile(EXPRESSION e,code3A instr){
+		return this.compile(e.getExpand(),instr);
 	}
 	
-	private void compile(EXPRAND e,code3A instr){
+	private String compile(EXPRAND e,code3A instr){
+		String res="";
 		if (!e.getExpors().isEmpty()){
-			instr.setOp("AND");
-			//instr.setLeft("...");
-			this.compile(e.getExpor(),instr);
+			instr.setOp(Op.AND);
+			res = this.compile(e.getExpor(),instr);
 			for(EXPRAND exp : e.getExpors()){
-				//instr.setRight("...");
-				this.compile(exp, nouvelleFunc.addCode("_","_","_","_"));
+				this.compile(exp, nouvelleFunc.addCode(Op.NONE,"_","_","_"));
 			}
 		}else{
-			this.compile(e.getExpor(),instr);
+			res = this.compile(e.getExpor(),instr);
 		}
+		return res;
 	}
 	
-	private void compile(EXPROR e,code3A instr){
+	private String compile(EXPROR e,code3A instr){
+		String res="";
 		if (!e.getExpnots().isEmpty()){
-			instr.setOp("OR");
+			instr.setOp(Op.OR);
 			//nouvelleFunc.addVar("r")
-			//instr.setLeft("...");
-			this.compile(e.getExpnot(),instr);
+			res = this.compile(e.getExpnot(),instr);
 			for(EXPROR exp :e.getExpnots()){
-				//instr.setRight("...");
-				this.compile(exp, nouvelleFunc.addCode("_","_","_","_"));
+				this.compile(exp, nouvelleFunc.addCode(Op.NONE,"_","_","_"));
 			}
 		}else{
-			this.compile(e.getExpnot(),instr);
+			res = this.compile(e.getExpnot(),instr);
 		}
+		return res;
 	}
 	
-	private void compile(EXPRNOT e,code3A instr){
+	private String compile(EXPRNOT e,code3A instr){
+		String res="";
 		if(e.getN() != null){
-			this.compile(e.getExpeq(),instr);
-			nouvelleFunc.addCode("not","_","_","_");
+			res = this.compile(e.getExpeq(),instr);
+			nouvelleFunc.addCode(Op.NOT,"_","_","_");
 		}else{
-			this.compile(e.getExpeq(),instr);
+			res = this.compile(e.getExpeq(),instr);
 		}
+		return res;
 	}
 	
-	private void compile(EXPREQ e,code3A instr){
+	private String compile(EXPREQ e,code3A instr){
+		String res="";
 		if(e.getExp1() != null){
 			if(!e.getExp2().isEmpty()){
-				instr.setOp("=?");
-				//instr.setLeft("...");
-				this.compile(e.getExp1(),instr);
+				instr.setOp(Op.EQ);
+				res = this.compile(e.getExp1(),instr);
 				for(EXPRSIMPLE exp : e.getExp2()){
-					//instr.setRight("...");
-					this.compile(exp,nouvelleFunc.addCode("_","_","_","_"));
+					instr.setRight(this.compile(exp,instr));
 				}
 			}else{
-				this.compile(e.getExp1(),instr);
+				res = this.compile(e.getExp1(),instr);
 			}
 		}else{
-			this.compile(e.getExp(),instr);
+			res = this.compile(e.getExp(),instr);
 		}
+		return res;
 	}
 	
-	private void compile(EXPRSIMPLE e,code3A instr){
+	private String compile(EXPRSIMPLE e,code3A instr){
+		String res="";
 		if(e.getValeur() != null){
-			if(e.getValeur() == "nil"){
-				instr.setOp("nil");
+			if(e.getValeur().equals("nil")){
+				instr.setOp(Op.NIL);
+				res = "_";
 			}else{
-				if (instr.getOp() == "_"){
-					instr.setOp("affect");
-					instr.setLeft(nouvelleFunc.getVar(e.getValeur()));
+				if (instr.getOp() == Op.NONE){
+					//aucun opérateur placé auparavant donc affectation simple
+					instr.setOp(Op.AFFECT);
+					res = nouvelleFunc.getVar(e.getValeur());
+				}else{
+					res = nouvelleFunc.getVar(e.getValeur());
 				}
 			}
 		}else if(e.getCons() != null){
-			//to do'''
+			//to do
 		}else if(e.getList() != null){
 			//to do
 		}else if(e.getHd() != null){
 			//instr.setLeft("...");
-			this.compile(e.getExpr(),instr);
-			instr.setOp("hd");
+			res = this.compile(e.getExpr(),instr);
+			instr.setOp(Op.HD);
 		}else if(e.getTl() != null){
 			//instr.setLeft("...");
-			this.compile(e.getExpr(), instr);
-			instr.setOp("tl");
+			res = this.compile(e.getExpr(), instr);
+			instr.setOp(Op.TL);
 		}else if(e.getSym() != null){
 			//to do
+			res = this.compile(e.getExpr(), instr);
+			if(e.getLexpr() != null){
+				this.compile(e.getLexpr(), instr);
+			}
 		}
+		return res;
 	}
 	
-	private void compile(LEXPR e,code3A instr){
-		this.compile(e.getExpr(),instr);
+	private String compile(LEXPR e,code3A instr){
+		String res = this.compile(e.getExpr(),instr);
 		if(e.getLexpr() != null){
 			this.compile(e.getLexpr(), instr);
 		}
+		return res;
 	}
 }

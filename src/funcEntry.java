@@ -29,7 +29,7 @@ public class funcEntry {
 		return this.tabVar.get(key);
 	}
 	
-	public code3A addCode(String op, String res, String left, String right){
+	public code3A addCode(Op op, String res, String left, String right){
 		code3A c = new code3A(op,res,left,right);
 		this.code.add(c);
 		return c;
@@ -40,6 +40,12 @@ public class funcEntry {
 			this.tabVar.put(key, Integer.toString(num));
 			num++;
 		}
+	}
+	
+	public String addReg(){
+		this.tabVar.put("r"+Integer.toString(num), Integer.toString(num));
+		num++;
+		return getVar("r"+num);
 	}
 	
 	public void addIn(){
@@ -53,16 +59,16 @@ public class funcEntry {
 	public String toString(){
 		String res="";
 		res+=in +" entrées, "+out+" sorties ; ";
-		res+="Table Var : { ";
+		res+="\nTable Var : { ";
 		for (String key: tabVar.keySet()){
 			res+="<"+key +", "+ tabVar.get(key) + ">";
 		}
 		
-		res+=" } Code : { ";
+		res+=" }\nCode : {\n";
 		for (code3A ligne : code){
-			res+=ligne.toString() + ", ";			
+			res+=ligne.toString() + ",\n";			
 		}	
-		res+=" }";
+		res+="}";
 		return res;
 	}
 }
