@@ -1,5 +1,6 @@
 package org.xtext.example.generator;
 
+import org.eclipse.emf.common.util.EList;
 import org.xtext.example.projet.*;
 
 public class CodeGenerator {
@@ -104,7 +105,15 @@ public class CodeGenerator {
 	// Pour le type "IF_THEN"
 	private void compile(IF_THEN if_then) {
 		code3A instr = nouvelleFunc.addCode(Op.IF,"_","_","_");
-		instr.setLeft(this.compile(if_then.getCond(),instr));
+		EXPRAND and = if_then.getCond().getExpand();
+		//si la condition est une expression composée (AND / OR / =?)
+		if(!and.getExpors().isEmpty() || !and.getExpor().getExpnots().isEmpty() || !and.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
+			code3A tmp = nouvelleFunc.addCode(null, "x", "", "");
+			tmp.setLeft(this.compile(if_then.getCond(), tmp));
+			instr.setLeft("x");
+		}else{
+			instr.setLeft(this.compile(if_then.getCond(),instr));
+		}
 		for(COMMANDS comm : if_then.getCommands1()){
 			this.compile(comm);
 		}
@@ -158,7 +167,13 @@ public class CodeGenerator {
 			instr.setOp(Op.AND);
 			res = this.compile(e.getExpor(),instr);
 			for(EXPRAND exp : e.getExpors()){
-				this.compile(exp, nouvelleFunc.addCode(Op.NONE,"_","_","_"));
+				if(!exp.getExpors().isEmpty() || !exp.getExpor().getExpnots().isEmpty()){
+					code3A tmp = nouvelleFunc.addCode(null, "x", "", "");
+					tmp.setLeft(this.compile(exp, tmp));
+					instr.setRight("x");
+				}else{
+					instr.setRight(this.compile(exp, instr));
+				}
 			}
 		}else{
 			res = this.compile(e.getExpor(),instr);
@@ -170,10 +185,15 @@ public class CodeGenerator {
 		String res="";
 		if (!e.getExpnots().isEmpty()){
 			instr.setOp(Op.OR);
-			//nouvelleFunc.addVar("r")
 			res = this.compile(e.getExpnot(),instr);
 			for(EXPROR exp :e.getExpnots()){
-				this.compile(exp, nouvelleFunc.addCode(Op.NONE,"_","_","_"));
+				if(!exp.getExpnots().isEmpty()){
+					code3A tmp = nouvelleFunc.addCode(null, "x", "", "");
+					tmp.setLeft(this.compile(exp, tmp));
+					instr.setRight("x");
+				}else{
+					instr.setRight(this.compile(exp, instr));
+				}
 			}
 		}else{
 			res = this.compile(e.getExpnot(),instr);
@@ -230,11 +250,9 @@ public class CodeGenerator {
 		}else if(e.getList() != null){
 			//to do
 		}else if(e.getHd() != null){
-			//instr.setLeft("...");
 			res = this.compile(e.getExpr(),instr);
 			instr.setOp(Op.HD);
 		}else if(e.getTl() != null){
-			//instr.setLeft("...");
 			res = this.compile(e.getExpr(), instr);
 			instr.setOp(Op.TL);
 		}else if(e.getSym() != null){
