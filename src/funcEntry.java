@@ -16,11 +16,14 @@ public class funcEntry {
 	//table des variables de la fonction
 	HashMap<String,String> tabVar;
 	//numéro de var
-	int num;
+	int numVar;
+	int numReg;
 	
 	public funcEntry(){
 		this.in = 0;
 		this.out = 0;
+		this.numVar = 0;
+		this.numReg = 0;
 		this.code = new ArrayList<code3A>();
 		this.tabVar = new HashMap<String,String>();
 	}
@@ -37,15 +40,17 @@ public class funcEntry {
 	
 	public void addVar(String key){
 		if(!this.tabVar.containsKey(key)){
-			this.tabVar.put(key, Integer.toString(num));
-			num++;
+			this.tabVar.put(key, Integer.toString(numVar));
+			numVar++;
 		}
 	}
 	
 	public String addReg(){
-		this.tabVar.put("r"+Integer.toString(num), Integer.toString(num));
-		num++;
-		return getVar("r"+num);
+		this.tabVar.put("r"+Integer.toString(numReg), Integer.toString(numVar));
+		String res = getVar("r"+numReg);
+		numReg++;
+		numVar++;
+		return res;
 	}
 	
 	public void addIn(){

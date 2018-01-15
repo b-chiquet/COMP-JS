@@ -6,7 +6,7 @@ import org.xtext.example.projet.*;
 public class CodeGenerator {
 	
 	//table des fonctions
-	static private funcTab table;
+	private funcTab table;
 	//numéro de fonction
 	private int num;
 	//funcEntry utilisé pour ajouter des fonctions à la funcTab
@@ -106,11 +106,12 @@ public class CodeGenerator {
 	private void compile(IF_THEN if_then) {
 		code3A instr = nouvelleFunc.addCode(Op.IF,"_","_","_");
 		EXPRAND and = if_then.getCond().getExpand();
-		//si la condition est une expression composée (AND / OR / =?)
+		//si la condition est une expression composée (AND , OR , =?)
 		if(!and.getExpors().isEmpty() || !and.getExpor().getExpnots().isEmpty() || !and.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-			code3A tmp = nouvelleFunc.addCode(null, "x", "", "");
+			String reg = nouvelleFunc.addReg();
+			code3A tmp = nouvelleFunc.addCode(null, reg, "", "");
 			tmp.setLeft(this.compile(if_then.getCond(), tmp));
-			instr.setLeft("x");
+			instr.setLeft(reg);
 		}else{
 			instr.setLeft(this.compile(if_then.getCond(),instr));
 		}
@@ -163,18 +164,25 @@ public class CodeGenerator {
 	
 	private String compile(EXPRAND e,code3A instr){
 		String res="";
+		//si c'est une expression AND
 		if (!e.getExpors().isEmpty()){
 			instr.setOp(Op.AND);
+			//compilation terme de gauche
 			res = this.compile(e.getExpor(),instr);
+			//compilation terme de droite
 			for(EXPRAND exp : e.getExpors()){
-				if(!exp.getExpors().isEmpty() || !exp.getExpor().getExpnots().isEmpty()){
-					code3A tmp = nouvelleFunc.addCode(null, "x", "", "");
+				//si l'expression de droite est une expression composee (and, or, eq)
+				if(!exp.getExpors().isEmpty() || !exp.getExpor().getExpnots().isEmpty() || !exp.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
+					//création d'un registre pour instruction intermediaire
+					String reg = nouvelleFunc.addReg();
+					code3A tmp = nouvelleFunc.addCode(null, reg, "", "");
 					tmp.setLeft(this.compile(exp, tmp));
-					instr.setRight("x");
+					instr.setRight(reg);
 				}else{
 					instr.setRight(this.compile(exp, instr));
 				}
 			}
+		//si c'est une expression OR	
 		}else{
 			res = this.compile(e.getExpor(),instr);
 		}
@@ -183,14 +191,19 @@ public class CodeGenerator {
 	
 	private String compile(EXPROR e,code3A instr){
 		String res="";
+		//si c'est une expression OR
 		if (!e.getExpnots().isEmpty()){
 			instr.setOp(Op.OR);
+			//compilation terme de gauche
 			res = this.compile(e.getExpnot(),instr);
-			for(EXPROR exp :e.getExpnots()){
-				if(!exp.getExpnots().isEmpty()){
-					code3A tmp = nouvelleFunc.addCode(null, "x", "", "");
+			//compilation terme de droite
+			for(EXPRAND exp :e.getExpnots()){
+				//si l'expression de droite est une expression composee (or, eq, and)
+				if(!exp.getExpors().isEmpty() || !exp.getExpor().getExpnots().isEmpty() || !exp.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
+					String reg = nouvelleFunc.addReg();
+					code3A tmp = nouvelleFunc.addCode(null, reg, "", "");
 					tmp.setLeft(this.compile(exp, tmp));
-					instr.setRight("x");
+					instr.setRight(reg);
 				}else{
 					instr.setRight(this.compile(exp, instr));
 				}
@@ -214,18 +227,41 @@ public class CodeGenerator {
 	
 	private String compile(EXPREQ e,code3A instr){
 		String res="";
+		//si c'est une exression simple ou eq
 		if(e.getExp1() != null){
+			//si c'est une expression eq
 			if(!e.getExp2().isEmpty()){
 				instr.setOp(Op.EQ);
 				res = this.compile(e.getExp1(),instr);
-				for(EXPRSIMPLE exp : e.getExp2()){
-					instr.setRight(this.compile(exp,instr));
+				for(EXPRAND exp : e.getExp2()){
+					//si l'expression de droite est une expression composee (or, eq, and)
+					if(!exp.getExpors().isEmpty() || !exp.getExpor().getExpnots().isEmpty() || !exp.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
+						String reg = nouvelleFunc.addReg();
+						code3A tmp = nouvelleFunc.addCode(null, reg, "", "");
+						tmp.setLeft(this.compile(exp, tmp));
+						instr.setRight(reg);
+					}else{
+						instr.setRight(this.compile(exp,instr));
+					}
 				}
+			//si c'est une expression simple
 			}else{
 				res = this.compile(e.getExp1(),instr);
 			}
+		//si c'est une expression entre parenthèses
 		}else{
-			res = this.compile(e.getExp(),instr);
+			EXPRAND exp = e.getExp();
+			/*//si l'expression est une expression composee (or, eq, and)
+			if(!exp.getExpors().isEmpty() || !exp.getExpor().getExpnots().isEmpty() || !exp.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
+				String reg = nouvelleFunc.addReg();
+				code3A tmp = nouvelleFunc.addCode(null, reg, "", "");
+				res = this.compile(exp, tmp);
+				tmp.setLeft(res);
+				instr.setRight(reg);
+			}else{
+				res = this.compile(exp,instr);
+			}*/
+			res = this.compile(exp,instr);
 		}
 		return res;
 	}

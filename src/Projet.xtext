@@ -72,13 +72,13 @@ EXPRAND:
 	 expor=EXPROR (=> 'and' expors+=EXPRAND )*
 ;
 EXPROR:
-	 expnot=EXPRNOT (=> 'or' expnots+=EXPROR )*
+	 expnot=EXPRNOT (=> 'or' expnots+=EXPRAND )*
 ;
 EXPRNOT:
 	(n='not')? expeq=EXPREQ
 ;
 EXPREQ:
-	(exp1=EXPRSIMPLE ('=?' exp2+=EXPRSIMPLE)?) | '(' exp=EXPRESSION')'
+	(exp1=EXPRSIMPLE ('=?' exp2+=EXPRAND)?) | '(' exp=EXPRAND')'
 ;
 
 //simples
