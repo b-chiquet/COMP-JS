@@ -12,7 +12,7 @@ public class funcEntry {
 	//nb de paramètres et de valeurs retournées
 	int in,out;
 	//liste des instructions en code 3@
-	ArrayList<code3A> code;
+	ArrayList<Instruction> code;
 	//table des variables de la fonction
 	HashMap<String,String> tabVar;
 	//numéro de var
@@ -24,7 +24,7 @@ public class funcEntry {
 		this.out = 0;
 		this.numVar = 0;
 		this.numReg = 0;
-		this.code = new ArrayList<code3A>();
+		this.code = new ArrayList<Instruction>();
 		this.tabVar = new HashMap<String,String>();
 	}
 	
@@ -32,10 +32,13 @@ public class funcEntry {
 		return this.tabVar.get(key);
 	}
 	
-	public code3A addCode(Op op, String res, String left, String right){
-		code3A c = new code3A(op,res,left,right);
-		this.code.add(c);
-		return c;
+	public Instruction addCode(Instruction instr){
+		this.code.add(instr);
+		return instr;
+	}
+	
+	public ArrayList<Instruction> getCode(){
+		return this.code;
 	}
 	
 	public void addVar(String key){
@@ -70,7 +73,7 @@ public class funcEntry {
 		}
 		
 		res+=" }\nCode : {\n";
-		for (code3A ligne : code){
+		for (Instruction ligne : code){
 			res+=ligne.toString() + ",\n";			
 		}	
 		res+="}";
