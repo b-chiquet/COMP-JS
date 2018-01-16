@@ -179,7 +179,6 @@ public class CodeGenerator {
 			instr.setLeft(reg);
 			tmp.setRes(reg);
 			tmp.setLeft(this.compile(if_then.getCond(), tmp, listDest));
-			instr.setRight(reg);
 		}else if(!and.getExpor().getExpnots().isEmpty()){
 			String reg = nouvelleFunc.addReg();
 			Or tmp = new Or("","","");
@@ -187,7 +186,6 @@ public class CodeGenerator {
 			instr.setLeft(reg);
 			tmp.setRes(reg);
 			tmp.setLeft(this.compile(if_then.getCond(), tmp, listDest));
-			instr.setRight(reg);
 		}else if(!and.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
 			String reg = nouvelleFunc.addReg();
 			Eq tmp = new Eq("","","");
@@ -195,10 +193,56 @@ public class CodeGenerator {
 			instr.setLeft(reg);
 			tmp.setRes(reg);
 			tmp.setLeft(this.compile(if_then.getCond(), tmp, listDest));
-			instr.setRight(reg);
 		//
 		}else{
-			instr.setLeft(this.compile(if_then.getCond(),instr, listDest));
+			//récupération de l'expression simple
+			EXPRSIMPLE e = and.getExpor().getExpnot().getExpeq().getExp1();
+			//nil ou variable ou symbole
+			if(e.getValeur() != null){
+				if(e.getValeur().equals("nil")){
+					instr.setLeft("nil");
+				}else{
+					instr.setLeft(this.compile(if_then.getCond(),instr, listDest));
+				}
+			//cons
+			}else if(e.getCons() != null){
+				String reg = nouvelleFunc.addReg();
+				Cons tmp = new Cons("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//list
+			}else if(e.getList() != null){
+				String reg = nouvelleFunc.addReg();
+				Liste tmp = new Liste("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//hd
+			}else if(e.getHd() != null){
+				String reg = nouvelleFunc.addReg();
+				Hd tmp = new Hd("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//tl
+			}else if(e.getTl() != null){
+				String reg = nouvelleFunc.addReg();
+				Tl tmp = new Tl("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//sym
+			}else if(e.getSym() != null){
+				//to do
+				if(e.getLexpr() != null){
+					
+				}
+			}
 		}
 		for(COMMANDS comm : if_then.getCommands1()){
 			this.compile(comm, instr.getCode());
@@ -246,7 +290,54 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		//
 		}else{
-			instr.setLeft(this.compile(fl.getExp(),instr, listDest));
+			//récupération de l'expression simple
+			EXPRSIMPLE e = and.getExpor().getExpnot().getExpeq().getExp1();
+			//nil ou variable ou symbole
+			if(e.getValeur() != null){
+				if(e.getValeur().equals("nil")){
+					instr.setLeft("nil");
+				}else{
+					instr.setLeft(this.compile(fl.getExp(),instr, listDest));
+				}
+			//cons
+			}else if(e.getCons() != null){
+				String reg = nouvelleFunc.addReg();
+				Cons tmp = new Cons("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//list
+			}else if(e.getList() != null){
+				String reg = nouvelleFunc.addReg();
+				Liste tmp = new Liste("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//hd
+			}else if(e.getHd() != null){
+				String reg = nouvelleFunc.addReg();
+				Hd tmp = new Hd("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//tl
+			}else if(e.getTl() != null){
+				String reg = nouvelleFunc.addReg();
+				Tl tmp = new Tl("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//sym
+			}else if(e.getSym() != null){
+				//to do
+				if(e.getLexpr() != null){
+					
+				}
+			}
 		}
 		for(COMMANDS comm : fl.getCommands()){
 			this.compile(comm, instr.getCode());
@@ -285,7 +376,54 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		//
 		}else{
-			instr.setLeft(this.compile(w.getCond(),instr, listDest));
+			//récupération de l'expression simple
+			EXPRSIMPLE e = and.getExpor().getExpnot().getExpeq().getExp1();
+			//nil ou variable ou symbole
+			if(e.getValeur() != null){
+				if(e.getValeur().equals("nil")){
+					instr.setLeft("nil");
+				}else{
+					instr.setLeft(this.compile(w.getCond(),instr, listDest));
+				}
+			//cons
+			}else if(e.getCons() != null){
+				String reg = nouvelleFunc.addReg();
+				Cons tmp = new Cons("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//list
+			}else if(e.getList() != null){
+				String reg = nouvelleFunc.addReg();
+				Liste tmp = new Liste("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//hd
+			}else if(e.getHd() != null){
+				String reg = nouvelleFunc.addReg();
+				Hd tmp = new Hd("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//tl
+			}else if(e.getTl() != null){
+				String reg = nouvelleFunc.addReg();
+				Tl tmp = new Tl("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//sym
+			}else if(e.getSym() != null){
+				//to do
+				if(e.getLexpr() != null){
+					
+				}
+			}
 		}
 		for(COMMANDS comm : w.getCommands()){
 			this.compile(comm, instr.getCode());
@@ -324,9 +462,56 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		//
 		}else{
-			instr.setLeft(this.compile(fe.getExp1(),instr, listDest));
+			//récupération de l'expression simple
+			EXPRSIMPLE e = exp1.getExpor().getExpnot().getExpeq().getExp1();
+			//nil ou variable ou symbole
+			if(e.getValeur() != null){
+				if(e.getValeur().equals("nil")){
+					instr.setLeft("nil");
+				}else{
+					instr.setLeft(this.compile(fe.getExp1(),instr, listDest));
+				}
+			//cons
+			}else if(e.getCons() != null){
+				String reg = nouvelleFunc.addReg();
+				Cons tmp = new Cons("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//list
+			}else if(e.getList() != null){
+				String reg = nouvelleFunc.addReg();
+				Liste tmp = new Liste("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//hd
+			}else if(e.getHd() != null){
+				String reg = nouvelleFunc.addReg();
+				Hd tmp = new Hd("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//tl
+			}else if(e.getTl() != null){
+				String reg = nouvelleFunc.addReg();
+				Tl tmp = new Tl("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeft(reg);
+			//sym
+			}else if(e.getSym() != null){
+				//to do
+				if(e.getLexpr() != null){
+					
+				}
+			}
 		}
-		//instr.setLeft(this.compile(fe.getExp1(), instr, listDest));
+		
 		EXPRAND exp2 = fe.getExp2().getExpand();
 		//si la condition est une expression composée (AND , OR , =?)
 		if(!exp2.getExpors().isEmpty()){
@@ -355,9 +540,56 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		//
 		}else{
-			instr.setLeftBis(this.compile(fe.getExp2(),instr, listDest));
+			//récupération de l'expression simple
+			EXPRSIMPLE e = exp2.getExpor().getExpnot().getExpeq().getExp1();
+			//nil ou variable ou symbole
+			if(e.getValeur() != null){
+				if(e.getValeur().equals("nil")){
+					instr.setLeftBis("nil");
+				}else{
+					instr.setLeftBis(this.compile(fe.getExp2(),instr, listDest));
+				}
+			//cons
+			}else if(e.getCons() != null){
+				String reg = nouvelleFunc.addReg();
+				Cons tmp = new Cons("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeftBis(reg);
+			//list
+			}else if(e.getList() != null){
+				String reg = nouvelleFunc.addReg();
+				Liste tmp = new Liste("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
+				instr.setLeftBis(reg);
+			//hd
+			}else if(e.getHd() != null){
+				String reg = nouvelleFunc.addReg();
+				Hd tmp = new Hd("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeftBis(reg);
+			//tl
+			}else if(e.getTl() != null){
+				String reg = nouvelleFunc.addReg();
+				Tl tmp = new Tl("","");
+				listDest.add(tmp);
+				tmp.setRes(reg);
+				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
+				instr.setLeftBis(reg);
+			//sym
+			}else if(e.getSym() != null){
+				//to do
+				if(e.getLexpr() != null){
+					
+				}
+			}
 		}
-		//instr.setLeftBis(this.compile(fe.getExp2(), instr, listDest));
+		
 		for(COMMANDS comm : fe.getCommands()){
 			this.compile(comm, instr.getCode());
 		}
