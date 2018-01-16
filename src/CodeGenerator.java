@@ -2,7 +2,6 @@ package org.xtext.example.generator;
 
 import java.util.ArrayList;
 
-import org.eclipse.emf.common.util.EList;
 import org.xtext.example.projet.*;
 
 public class CodeGenerator {
@@ -100,48 +99,63 @@ public class CodeGenerator {
 		nouvelleFunc.addVar(a.getVariable());
 		//si expression est un and
 		if(!a.getValeur().getExpand().getExpors().isEmpty()){
-			Instruction instr = new And("","","");
+			And instr = new And("","","");
 			listDest.add(instr);
 			instr.setRes(nouvelleFunc.getVar(a.getVariable()));
 			instr.setLeft(this.compile(a.getValeur(),instr, listDest));
 		}
 		//si expression est un or
 		else if(!a.getValeur().getExpand().getExpor().getExpnots().isEmpty()){
-			Instruction instr = new Or("","","");
+			Or instr = new Or("","","");
 			listDest.add(instr);
 			instr.setRes(nouvelleFunc.getVar(a.getVariable()));
 			instr.setLeft(this.compile(a.getValeur(),instr,listDest));
 		}
 		//si expression est un =?
 		else if(!a.getValeur().getExpand().getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-			Instruction instr = new Eq("","","");
+			Eq instr = new Eq("","","");
 			listDest.add(instr);
 			instr.setRes(nouvelleFunc.getVar(a.getVariable()));
 			instr.setLeft(this.compile(a.getValeur(),instr,listDest));
 		}
 		//si expression simple
 		else{
+			//récupération de l'expression simple
 			EXPRSIMPLE e = a.getValeur().getExpand().getExpor().getExpnot().getExpeq().getExp1();
+			//nil ou variable ou symbole
 			if(e.getValeur() != null){
 				if(e.getValeur().equals("nil")){
-					Instruction instr = new Nil(nouvelleFunc.getVar(a.getVariable()));
+					Nil instr = new Nil(nouvelleFunc.getVar(a.getVariable()));
 					listDest.add(instr);
 				}else{
-					Instruction instr = new Affect(nouvelleFunc.getVar(a.getVariable()),nouvelleFunc.getVar(e.getValeur()));
+					Affect instr = new Affect(nouvelleFunc.getVar(a.getVariable()),nouvelleFunc.getVar(e.getValeur()));
 					listDest.add(instr);
 				}
+			//cons
 			}else if(e.getCons() != null){
-				//to do
-				Instruction instr = new Cons();
+				Cons instr = new Cons("","");
 				listDest.add(instr);
+				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
+				instr.setLeft(nouvelleFunc.getVar(this.compile(e.getLexpr(),instr,listDest)));
+			//list
 			}else if(e.getList() != null){
-				//to do
+				Liste instr = new Liste("","");
+				listDest.add(instr);
+				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
+				instr.setLeft(nouvelleFunc.getVar(this.compile(e.getLexpr(),instr,listDest)));
+			//hd
 			}else if(e.getHd() != null){
-				//res = this.compile(e.getExpr(),instr);
-				//instr.setOp(Op.HD);
+				Hd instr = new Hd("","");
+				listDest.add(instr);
+				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
+				instr.setLeft(nouvelleFunc.getVar(this.compile(e.getExpr(),instr,listDest)));
+			//tl
 			}else if(e.getTl() != null){
-				//res = this.compile(e.getExpr(), instr);
-				//instr.setOp(Op.TL);
+				Tl instr = new Tl("","");
+				listDest.add(instr);
+				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
+				instr.setLeft(nouvelleFunc.getVar(this.compile(e.getExpr(),instr,listDest)));
+			//sym
 			}else if(e.getSym() != null){
 				//to do
 				//res = this.compile(e.getExpr(), instr);
@@ -160,7 +174,7 @@ public class CodeGenerator {
 		//si la condition est une expression composée (AND , OR , =?)
 		if(!and.getExpors().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new And("","","");
+			And tmp = new And("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -168,7 +182,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!and.getExpor().getExpnots().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Or("","","");
+			Or tmp = new Or("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -176,7 +190,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!and.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Eq("","","");
+			Eq tmp = new Eq("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -208,7 +222,7 @@ public class CodeGenerator {
 		//si la condition est une expression composée (AND , OR , =?)
 		if(!and.getExpors().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new And("","","");
+			And tmp = new And("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -216,7 +230,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!and.getExpor().getExpnots().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Or("","","");
+			Or tmp = new Or("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -224,7 +238,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!and.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Eq("","","");
+			Eq tmp = new Eq("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -247,7 +261,7 @@ public class CodeGenerator {
 		//si la condition est une expression composée (AND , OR , =?)
 		if(!and.getExpors().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new And("","","");
+			And tmp = new And("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -255,7 +269,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!and.getExpor().getExpnots().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Or("","","");
+			Or tmp = new Or("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -263,7 +277,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!and.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Eq("","","");
+			Eq tmp = new Eq("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -286,7 +300,7 @@ public class CodeGenerator {
 		//si la condition est une expression composée (AND , OR , =?)
 		if(!exp1.getExpors().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new And("","","");
+			And tmp = new And("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -294,7 +308,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!exp1.getExpor().getExpnots().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Or("","","");
+			Or tmp = new Or("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -302,7 +316,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!exp1.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Eq("","","");
+			Eq tmp = new Eq("","","");
 			listDest.add(tmp);
 			instr.setLeft(reg);
 			tmp.setRes(reg);
@@ -317,7 +331,7 @@ public class CodeGenerator {
 		//si la condition est une expression composée (AND , OR , =?)
 		if(!exp2.getExpors().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new And("","","");
+			And tmp = new And("","","");
 			listDest.add(tmp);
 			instr.setLeftBis(reg);
 			tmp.setRes(reg);
@@ -325,7 +339,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!exp2.getExpor().getExpnots().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Or("","","");
+			Or tmp = new Or("","","");
 			listDest.add(tmp);
 			instr.setLeftBis(reg);
 			tmp.setRes(reg);
@@ -333,7 +347,7 @@ public class CodeGenerator {
 			instr.setRight(reg);
 		}else if(!exp2.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
 			String reg = nouvelleFunc.addReg();
-			Instruction tmp = new Eq("","","");
+			Eq tmp = new Eq("","","");
 			listDest.add(tmp);
 			instr.setLeftBis(reg);
 			tmp.setRes(reg);
@@ -494,15 +508,8 @@ public class CodeGenerator {
 		}else{
 			EXPRAND exp = e.getExp();
 			/*//si l'expression est une expression composee (or, eq, and)
-			if(!exp.getExpors().isEmpty() || !exp.getExpor().getExpnots().isEmpty() || !exp.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-				String reg = nouvelleFunc.addReg();
-				code3A tmp = nouvelleFunc.addCode(null, reg, "", "");
-				res = this.compile(exp, tmp);
-				tmp.setLeft(res);
-				instr.setRight(reg);
-			}else{
-				res = this.compile(exp,instr);
-			}*/
+			 * ...
+			*/
 			res = this.compile(exp,instr, listDest);
 		}
 		return res;
@@ -511,26 +518,15 @@ public class CodeGenerator {
 	private String compile(EXPRSIMPLE e,Instruction instr, ArrayList<Instruction> listDest){
 		String res="";
 		if(e.getValeur() != null){
-			
 			if(e.getValeur().equals("nil")){
 				res = "_";
 			}else{
-				res = nouvelleFunc.getVar(e.getValeur());
+				res = e.getValeur();
 			}
-		}else if(e.getCons() != null){
-			//to do
-		}else if(e.getList() != null){
-			//to do
-		}else if(e.getHd() != null){
-			res = this.compile(e.getExpr(),instr, listDest);
-		}else if(e.getTl() != null){
+		}else if (e.getLexpr() != null){
+			res = this.compile(e.getLexpr(), instr, listDest);
+		}else if (e.getExpr() != null){
 			res = this.compile(e.getExpr(), instr, listDest);
-		}else if(e.getSym() != null){
-			//to do
-			res = this.compile(e.getExpr(), instr, listDest);
-			if(e.getLexpr() != null){
-				this.compile(e.getLexpr(), instr, listDest);
-			}
 		}
 		return res;
 	}
