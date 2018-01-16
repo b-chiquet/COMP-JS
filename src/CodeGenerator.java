@@ -136,25 +136,25 @@ public class CodeGenerator {
 				Cons instr = new Cons("","");
 				listDest.add(instr);
 				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-				instr.setLeft(nouvelleFunc.getVar(this.compile(e.getLexpr(),instr,listDest)));
+				instr.setLeft(this.compile(e.getLexpr(),instr,listDest));
 			//list
 			}else if(e.getList() != null){
 				Liste instr = new Liste("","");
 				listDest.add(instr);
 				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-				instr.setLeft(nouvelleFunc.getVar(this.compile(e.getLexpr(),instr,listDest)));
+				instr.setLeft(this.compile(e.getLexpr(),instr,listDest));
 			//hd
 			}else if(e.getHd() != null){
 				Hd instr = new Hd("","");
 				listDest.add(instr);
 				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-				instr.setLeft(nouvelleFunc.getVar(this.compile(e.getExpr(),instr,listDest)));
+				instr.setLeft(this.compile(e.getExpr(),instr,listDest));
 			//tl
 			}else if(e.getTl() != null){
 				Tl instr = new Tl("","");
 				listDest.add(instr);
 				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-				instr.setLeft(nouvelleFunc.getVar(this.compile(e.getExpr(),instr,listDest)));
+				instr.setLeft(this.compile(e.getExpr(),instr,listDest));
 			//sym
 			}else if(e.getSym() != null){
 				//to do
@@ -521,7 +521,7 @@ public class CodeGenerator {
 			if(e.getValeur().equals("nil")){
 				res = "_";
 			}else{
-				res = e.getValeur();
+				res = nouvelleFunc.getVar(e.getValeur());
 			}
 		}else if (e.getLexpr() != null){
 			res = this.compile(e.getLexpr(), instr, listDest);
