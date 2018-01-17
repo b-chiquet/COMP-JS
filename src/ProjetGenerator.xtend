@@ -244,7 +244,7 @@ class ProjetGenerator extends AbstractGenerator {
 	}
 	
 	def compile(LEXPR e){
-		'''«e.expr.compile»«IF e.lexpr !== null»«e.lexpr.compile»«ENDIF»'''
+		'''«e.expr.compile»«IF e.lexpr !== null» «e.lexpr.compile»«ENDIF»'''
 	}
 
 }

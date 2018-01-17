@@ -13,14 +13,19 @@ public class CodeGenerator {
 	//funcEntry utilisé pour ajouter des fonctions à la funcTab
 	private funcEntry nouvelleFunc;
 	
+	//table des symboles
+	private SymTab symtab;
+	
 	
 	public CodeGenerator(){
 		this.table = new funcTab();
+		this.symtab = new SymTab();
 		num=0;
 	}
 	
 	public void generate(PROGRAM d){
 		this.compile(d);
+		//affichage de la table des fonctions obtenue
 		System.out.println(this.table.toString());
 	}
 
@@ -34,14 +39,18 @@ public class CodeGenerator {
 
 	// Pour le type "FUNCTION"
 	private void compile(FUNCTION f) {
+		//on ajoute le nom de la fonction à la table des symboles
+		this.symtab.addSym(f.getName());
 		this.compile(f.getDef());
 	}
 
 	// Pour le type "DEFINTION"
 	private void compile(DEFINITION d) {
+		//ajout d'une nouvelle fonction à la table des fonctions
 		nouvelleFunc = new funcEntry();
 		table.addFunc("f"+num,nouvelleFunc);
 		num++;
+		
 		this.compile(d.getInputs());
 		this.compile(d.getCode(), nouvelleFunc.getCode());
 		this.compile(d.getOutputs());
@@ -96,158 +105,26 @@ public class CodeGenerator {
 
 	// Pour le type "AFFECT"
 	private void compile(AFFECT a, ArrayList<Instruction> listDest) {
+		//ajout de la variable à la table des variables
 		nouvelleFunc.addVar(a.getVariable());
-		//si expression est un and
-		if(!a.getValeur().getExpand().getExpors().isEmpty()){
-			And instr = new And("","","");
-			listDest.add(instr);
-			instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-			instr.setLeft(this.compile(a.getValeur(),instr, listDest));
-		}
-		//si expression est un or
-		else if(!a.getValeur().getExpand().getExpor().getExpnots().isEmpty()){
-			Or instr = new Or("","","");
-			listDest.add(instr);
-			instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-			instr.setLeft(this.compile(a.getValeur(),instr,listDest));
-		}
-		//si expression est un =?
-		else if(!a.getValeur().getExpand().getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-			Eq instr = new Eq("","","");
-			listDest.add(instr);
-			instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-			instr.setLeft(this.compile(a.getValeur(),instr,listDest));
-		}
-		//si expression simple
-		else{
-			//récupération de l'expression simple
-			EXPRSIMPLE e = a.getValeur().getExpand().getExpor().getExpnot().getExpeq().getExp1();
-			//nil ou variable ou symbole
-			if(e.getValeur() != null){
-				if(e.getValeur().equals("nil")){
-					Nil instr = new Nil(nouvelleFunc.getVar(a.getVariable()));
-					listDest.add(instr);
-				}else{
-					Affect instr = new Affect(nouvelleFunc.getVar(a.getVariable()),nouvelleFunc.getVar(e.getValeur()));
-					listDest.add(instr);
-				}
-			//cons
-			}else if(e.getCons() != null){
-				Cons instr = new Cons("","");
-				listDest.add(instr);
-				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-				instr.setLeft(this.compile(e.getLexpr(),instr,listDest));
-			//list
-			}else if(e.getList() != null){
-				Liste instr = new Liste("","");
-				listDest.add(instr);
-				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-				instr.setLeft(this.compile(e.getLexpr(),instr,listDest));
-			//hd
-			}else if(e.getHd() != null){
-				Hd instr = new Hd("","");
-				listDest.add(instr);
-				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-				instr.setLeft(this.compile(e.getExpr(),instr,listDest));
-			//tl
-			}else if(e.getTl() != null){
-				Tl instr = new Tl("","");
-				listDest.add(instr);
-				instr.setRes(nouvelleFunc.getVar(a.getVariable()));
-				instr.setLeft(this.compile(e.getExpr(),instr,listDest));
-			//sym
-			}else if(e.getSym() != null){
-				//to do
-				//res = this.compile(e.getExpr(), instr);
-				if(e.getLexpr() != null){
-					
-				}
-			}
-		}
+		//compilation de l'expression
+		this.compile(a.getValeur(),nouvelleFunc.getVar(a.getVariable()),listDest);
 	}
 
 	// Pour le type "IF_THEN"
 	private void compile(IF_THEN if_then, ArrayList<Instruction> listDest) {
+		String tmp = this.compile(if_then.getCond(),null,listDest);
+		
 		If instr = new If("");
 		listDest.add(instr);
-		EXPRAND and = if_then.getCond().getExpand();
-		//si la condition est une expression composée (AND , OR , =?)
-		if(!and.getExpors().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			And tmp = new And("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(if_then.getCond(), tmp, listDest));
-		}else if(!and.getExpor().getExpnots().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Or tmp = new Or("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(if_then.getCond(), tmp, listDest));
-		}else if(!and.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Eq tmp = new Eq("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(if_then.getCond(), tmp, listDest));
-		//
-		}else{
-			//récupération de l'expression simple
-			EXPRSIMPLE e = and.getExpor().getExpnot().getExpeq().getExp1();
-			//nil ou variable ou symbole
-			if(e.getValeur() != null){
-				if(e.getValeur().equals("nil")){
-					instr.setLeft("nil");
-				}else{
-					instr.setLeft(this.compile(if_then.getCond(),instr, listDest));
-				}
-			//cons
-			}else if(e.getCons() != null){
-				String reg = nouvelleFunc.addReg();
-				Cons tmp = new Cons("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//list
-			}else if(e.getList() != null){
-				String reg = nouvelleFunc.addReg();
-				Liste tmp = new Liste("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//hd
-			}else if(e.getHd() != null){
-				String reg = nouvelleFunc.addReg();
-				Hd tmp = new Hd("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//tl
-			}else if(e.getTl() != null){
-				String reg = nouvelleFunc.addReg();
-				Tl tmp = new Tl("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//sym
-			}else if(e.getSym() != null){
-				//to do
-				if(e.getLexpr() != null){
-					
-				}
-			}
-		}
+		
+		instr.setLeft(tmp);
 		for(COMMANDS comm : if_then.getCommands1()){
+			//ajout des commandes dans le "then"
 			this.compile(comm, instr.getCode());
 		}
 		for(COMMANDS comm : if_then.getCommands2()){
+			//ajout des commandes dans le "else"
 			this.compile(comm, instr.getCodeBis());
 		}
 	}
@@ -260,513 +137,279 @@ public class CodeGenerator {
 	
 	//Pour le type "FOR_LOOP"
 	private void compile(FOR_LOOP fl, ArrayList<Instruction> listDest){
+		String tmp = this.compile(fl.getExp(),null,listDest);
+		
 		For instr = new For("");
 		listDest.add(instr);
-		EXPRAND and = fl.getExp().getExpand();
-		//si la condition est une expression composée (AND , OR , =?)
-		if(!and.getExpors().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			And tmp = new And("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(fl.getExp(), tmp, listDest));
-			instr.setRight(reg);
-		}else if(!and.getExpor().getExpnots().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Or tmp = new Or("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(fl.getExp(), tmp, listDest));
-			instr.setRight(reg);
-		}else if(!and.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Eq tmp = new Eq("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(fl.getExp(), tmp, listDest));
-			instr.setRight(reg);
-		//
-		}else{
-			//récupération de l'expression simple
-			EXPRSIMPLE e = and.getExpor().getExpnot().getExpeq().getExp1();
-			//nil ou variable ou symbole
-			if(e.getValeur() != null){
-				if(e.getValeur().equals("nil")){
-					instr.setLeft("nil");
-				}else{
-					instr.setLeft(this.compile(fl.getExp(),instr, listDest));
-				}
-			//cons
-			}else if(e.getCons() != null){
-				String reg = nouvelleFunc.addReg();
-				Cons tmp = new Cons("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//list
-			}else if(e.getList() != null){
-				String reg = nouvelleFunc.addReg();
-				Liste tmp = new Liste("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//hd
-			}else if(e.getHd() != null){
-				String reg = nouvelleFunc.addReg();
-				Hd tmp = new Hd("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//tl
-			}else if(e.getTl() != null){
-				String reg = nouvelleFunc.addReg();
-				Tl tmp = new Tl("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//sym
-			}else if(e.getSym() != null){
-				//to do
-				if(e.getLexpr() != null){
-					
-				}
-			}
-		}
+		
+		instr.setLeft(tmp);
+		
 		for(COMMANDS comm : fl.getCommands()){
+			//ajout des commandes dans le "do"
 			this.compile(comm, instr.getCode());
 		}
 	}
 	
 	//Pour le type "WHILE"
 	private void compile(WHILE w, ArrayList<Instruction> listDest){
+		String tmp = this.compile(w.getCond(),null,listDest);
+		
 		While instr = new While("");
 		listDest.add(instr);
-		EXPRAND and = w.getCond().getExpand();
-		//si la condition est une expression composée (AND , OR , =?)
-		if(!and.getExpors().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			And tmp = new And("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(w.getCond(), tmp, listDest));
-			instr.setRight(reg);
-		}else if(!and.getExpor().getExpnots().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Or tmp = new Or("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(w.getCond(), tmp, listDest));
-			instr.setRight(reg);
-		}else if(!and.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Eq tmp = new Eq("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(w.getCond(), tmp, listDest));
-			instr.setRight(reg);
-		//
-		}else{
-			//récupération de l'expression simple
-			EXPRSIMPLE e = and.getExpor().getExpnot().getExpeq().getExp1();
-			//nil ou variable ou symbole
-			if(e.getValeur() != null){
-				if(e.getValeur().equals("nil")){
-					instr.setLeft("nil");
-				}else{
-					instr.setLeft(this.compile(w.getCond(),instr, listDest));
-				}
-			//cons
-			}else if(e.getCons() != null){
-				String reg = nouvelleFunc.addReg();
-				Cons tmp = new Cons("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//list
-			}else if(e.getList() != null){
-				String reg = nouvelleFunc.addReg();
-				Liste tmp = new Liste("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//hd
-			}else if(e.getHd() != null){
-				String reg = nouvelleFunc.addReg();
-				Hd tmp = new Hd("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//tl
-			}else if(e.getTl() != null){
-				String reg = nouvelleFunc.addReg();
-				Tl tmp = new Tl("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//sym
-			}else if(e.getSym() != null){
-				//to do
-				if(e.getLexpr() != null){
-					
-				}
-			}
-		}
+		
+		instr.setLeft(tmp);
+		
 		for(COMMANDS comm : w.getCommands()){
+			//ajout des commandes dans le "do"
 			this.compile(comm, instr.getCode());
 		}
 	}
 	
 	//Pour le type "FOREACH"
 	private void compile(FOREACH fe, ArrayList<Instruction> listDest){
+		//compilation du terme de gauche de la condition
+		String tmp = this.compile(fe.getExp1(), null, listDest);
+		//idem pour terme de droite
+		String tmpbis = this.compile(fe.getExp2(), null, listDest);
+		
 		Foreach instr = new Foreach("");
 		listDest.add(instr);
-		EXPRAND exp1 = fe.getExp1().getExpand();
-		//si la condition est une expression composée (AND , OR , =?)
-		if(!exp1.getExpors().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			And tmp = new And("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(fe.getExp1(), tmp, listDest));
-			instr.setRight(reg);
-		}else if(!exp1.getExpor().getExpnots().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Or tmp = new Or("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(fe.getExp1(), tmp, listDest));
-			instr.setRight(reg);
-		}else if(!exp1.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Eq tmp = new Eq("","","");
-			listDest.add(tmp);
-			instr.setLeft(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(fe.getExp1(), tmp, listDest));
-			instr.setRight(reg);
-		//
-		}else{
-			//récupération de l'expression simple
-			EXPRSIMPLE e = exp1.getExpor().getExpnot().getExpeq().getExp1();
-			//nil ou variable ou symbole
-			if(e.getValeur() != null){
-				if(e.getValeur().equals("nil")){
-					instr.setLeft("nil");
-				}else{
-					instr.setLeft(this.compile(fe.getExp1(),instr, listDest));
-				}
-			//cons
-			}else if(e.getCons() != null){
-				String reg = nouvelleFunc.addReg();
-				Cons tmp = new Cons("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//list
-			}else if(e.getList() != null){
-				String reg = nouvelleFunc.addReg();
-				Liste tmp = new Liste("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//hd
-			}else if(e.getHd() != null){
-				String reg = nouvelleFunc.addReg();
-				Hd tmp = new Hd("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//tl
-			}else if(e.getTl() != null){
-				String reg = nouvelleFunc.addReg();
-				Tl tmp = new Tl("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeft(reg);
-			//sym
-			}else if(e.getSym() != null){
-				//to do
-				if(e.getLexpr() != null){
-					
-				}
-			}
-		}
 		
-		EXPRAND exp2 = fe.getExp2().getExpand();
-		//si la condition est une expression composée (AND , OR , =?)
-		if(!exp2.getExpors().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			And tmp = new And("","","");
-			listDest.add(tmp);
-			instr.setLeftBis(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(fe.getExp2(), tmp, listDest));
-			instr.setRight(reg);
-		}else if(!exp2.getExpor().getExpnots().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Or tmp = new Or("","","");
-			listDest.add(tmp);
-			instr.setLeftBis(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(fe.getExp2(), tmp, listDest));
-			instr.setRight(reg);
-		}else if(!exp2.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-			String reg = nouvelleFunc.addReg();
-			Eq tmp = new Eq("","","");
-			listDest.add(tmp);
-			instr.setLeftBis(reg);
-			tmp.setRes(reg);
-			tmp.setLeft(this.compile(fe.getExp2(), tmp, listDest));
-			instr.setRight(reg);
-		//
-		}else{
-			//récupération de l'expression simple
-			EXPRSIMPLE e = exp2.getExpor().getExpnot().getExpeq().getExp1();
-			//nil ou variable ou symbole
-			if(e.getValeur() != null){
-				if(e.getValeur().equals("nil")){
-					instr.setLeftBis("nil");
-				}else{
-					instr.setLeftBis(this.compile(fe.getExp2(),instr, listDest));
-				}
-			//cons
-			}else if(e.getCons() != null){
-				String reg = nouvelleFunc.addReg();
-				Cons tmp = new Cons("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeftBis(reg);
-			//list
-			}else if(e.getList() != null){
-				String reg = nouvelleFunc.addReg();
-				Liste tmp = new Liste("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getLexpr(),tmp,listDest));
-				instr.setLeftBis(reg);
-			//hd
-			}else if(e.getHd() != null){
-				String reg = nouvelleFunc.addReg();
-				Hd tmp = new Hd("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeftBis(reg);
-			//tl
-			}else if(e.getTl() != null){
-				String reg = nouvelleFunc.addReg();
-				Tl tmp = new Tl("","");
-				listDest.add(tmp);
-				tmp.setRes(reg);
-				tmp.setLeft(this.compile(e.getExpr(),tmp,listDest));
-				instr.setLeftBis(reg);
-			//sym
-			}else if(e.getSym() != null){
-				//to do
-				if(e.getLexpr() != null){
-					
-				}
-			}
-		}
+		instr.setLeft(tmp);
+		instr.setLeftBis(tmpbis);
 		
 		for(COMMANDS comm : fe.getCommands()){
+			//ajout des commandes dans le "do"
 			this.compile(comm, instr.getCode());
 		}
   	}
 
 
 	//Pour le type "EXPRESSION"
-	private String compile(EXPRESSION e,Instruction instr, ArrayList<Instruction> listDest){
-		return this.compile(e.getExpand(),instr,listDest);
+	private String compile(EXPRESSION e,String addRes, ArrayList<Instruction> listDest){
+		return this.compile(e.getExpand(),addRes,listDest);
 	}
 	
-	private String compile(EXPRAND e,Instruction instr, ArrayList<Instruction> listDest){
+	private String compile(EXPRAND e,String addRes, ArrayList<Instruction> listDest){
 		String res="";
 		//si c'est une expression AND
 		if (!e.getExpors().isEmpty()){
-			//compilation terme de gauche
-			res = this.compile(e.getExpor(),instr, listDest);
 			//compilation terme de droite
+			String right="";
 			for(EXPRAND exp : e.getExpors()){
-				//si l'expression de droite est une expression composee (and, or, eq)
-				if(!exp.getExpors().isEmpty()){
-					String reg = nouvelleFunc.addReg();
-					And tmp = new And("","","");
-					listDest.add(tmp);
-					tmp.setRes(reg);
-					tmp.setLeft(this.compile(exp, tmp, listDest));
-					instr.setRight(reg);
-				}else if(!exp.getExpor().getExpnots().isEmpty()){
-					String reg = nouvelleFunc.addReg();
-					Or tmp = new Or("","","");
-					listDest.add(tmp);
-					tmp.setRes(reg);
-					tmp.setLeft(this.compile(exp, tmp, listDest));
-					instr.setRight(reg);
-				}else if(!exp.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-					String reg = nouvelleFunc.addReg();
-					Eq tmp = new Eq("","","");
-					listDest.add(tmp);
-					tmp.setRes(reg);
-					tmp.setLeft(this.compile(exp, tmp, listDest));
-					instr.setRight(reg);
-				//
-				}else{
-					instr.setRight(this.compile(exp, instr, listDest));
-				}
+				right = this.compile(exp, null, listDest);
 			}
+			//compilation terme de gauche
+			String left = this.compile(e.getExpor(),null, listDest);
+			
+			And and = new And("","","");
+			listDest.add(and);
+			
+			and.setRight(right);
+			and.setLeft(left);
+			
+			if(addRes == null){
+				res = nouvelleFunc.addReg();
+			}else{
+				res = addRes;
+			}
+			
+			and.setRes(res);
 		//si c'est une expression OR	
 		}else{
-			res = this.compile(e.getExpor(),instr, listDest);
+			if(addRes == null){
+				res = this.compile(e.getExpor(),null, listDest);
+			}else{
+				res = this.compile(e.getExpor(),addRes, listDest);
+			}
 		}
 		return res;
 	}
 	
-	private String compile(EXPROR e,Instruction instr, ArrayList<Instruction> listDest){
+	private String compile(EXPROR e,String addRes, ArrayList<Instruction> listDest){
 		String res="";
 		//si c'est une expression OR
 		if (!e.getExpnots().isEmpty()){
-			//compilation terme de gauche
-			res = this.compile(e.getExpnot(),instr, listDest);
 			//compilation terme de droite
+			String right="";
 			for(EXPRAND exp :e.getExpnots()){
-				//si l'expression de droite est une expression composee (or, eq, and)
-				if(!exp.getExpors().isEmpty()){
-					String reg = nouvelleFunc.addReg();
-					And tmp = new And("","","");
-					listDest.add(tmp);
-					tmp.setRes(reg);
-					tmp.setLeft(this.compile(exp, tmp, listDest));
-					instr.setRight(reg);
-				}else if(!exp.getExpor().getExpnots().isEmpty()){
-					String reg = nouvelleFunc.addReg();
-					Or tmp = new Or("","","");
-					listDest.add(tmp);
-					tmp.setRes(reg);
-					tmp.setLeft(this.compile(exp, tmp, listDest));
-					instr.setRight(reg);
-				}else if(!exp.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-					String reg = nouvelleFunc.addReg();
-					Eq tmp = new Eq("","","");
-					listDest.add(tmp);
-					tmp.setRes(reg);
-					tmp.setLeft(this.compile(exp, tmp, listDest));
-					instr.setRight(reg);
-				//
-				}else{
-					instr.setRight(this.compile(exp, instr, listDest));
-				}
+				right = this.compile(exp, null, listDest);
 			}
+			//compilation terme de gauche
+			String left = this.compile(e.getExpnot(),null, listDest);
+			
+			Or or = new Or("","","");
+			listDest.add(or);
+			
+			or.setRight(right);
+			or.setLeft(left);
+			
+			if(addRes == null){
+				res = nouvelleFunc.addReg();
+			}else{
+				res = addRes;
+			}
+			
+			or.setRes(res);
 		}else{
-			res = this.compile(e.getExpnot(),instr, listDest);
+			if(addRes == null){
+				res = this.compile(e.getExpnot(),null, listDest);
+			}else{
+				res = this.compile(e.getExpnot(),addRes, listDest);
+			}
 		}
 		return res;
 	}
 	
-	private String compile(EXPRNOT e,Instruction instr, ArrayList<Instruction> listDest){
+	private String compile(EXPRNOT e,String addRes, ArrayList<Instruction> listDest){
 		String res="";
 		//si on a une instruction not
 		if(e.getN() != null){
-			res = this.compile(e.getExpeq(),instr, listDest);
-			nouvelleFunc.addCode(new Not("",""));
+			String tmp = this.compile(e.getExpeq(),null, listDest);
+			Not not = new Not("","");
+			listDest.add(not);
+			if(addRes == null){
+				res = nouvelleFunc.addReg();
+			}else{
+				res = addRes;
+			}
+			not.setRes(res);
+			not.setLeft(tmp);
 		}else{
-			res = this.compile(e.getExpeq(),instr, listDest);
+			res = this.compile(e.getExpeq(),addRes, listDest);
 		}
 		return res;
 	}
 	
-	private String compile(EXPREQ e,Instruction instr, ArrayList<Instruction> listDest){
+	private String compile(EXPREQ e,String addRes, ArrayList<Instruction> listDest){
 		String res="";
 		//si c'est une exression simple ou eq
 		if(e.getExp1() != null){
 			//si c'est une expression eq
 			if(!e.getExp2().isEmpty()){
-				//instr.setOp(Op.EQ);
-				res = this.compile(e.getExp1(),instr, listDest);
+				//res = this.compile(e.getExp1(),instr, listDest);
+				String right="";
 				for(EXPRAND exp : e.getExp2()){
-					//si l'expression de droite est une expression composee (or, eq, and)
-					if(!exp.getExpors().isEmpty()){
-						String reg = nouvelleFunc.addReg();
-						And tmp = new And("","","");
-						listDest.add(tmp);
-						tmp.setRes(reg);
-						tmp.setLeft(this.compile(exp, tmp, listDest));
-						instr.setRight(reg);
-					}else if(!exp.getExpor().getExpnots().isEmpty()){
-						String reg = nouvelleFunc.addReg();
-						Or tmp = new Or("","","");
-						listDest.add(tmp);
-						tmp.setRes(reg);
-						tmp.setLeft(this.compile(exp, tmp, listDest));
-						instr.setRight(reg);
-					}else if(!exp.getExpor().getExpnot().getExpeq().getExp2().isEmpty()){
-						String reg = nouvelleFunc.addReg();
-						Eq tmp = new Eq("","","");
-						listDest.add(tmp);
-						tmp.setRes(reg);
-						tmp.setLeft(this.compile(exp, tmp, listDest));
-						instr.setRight(reg);
-					//
-					}else{
-						instr.setRight(this.compile(exp,instr, listDest));
-					}
+					right = this.compile(exp,null, listDest);
 				}
+				//compilation terme de gauche
+				String left = this.compile(e.getExp1(),null, listDest);
+				
+				Eq eq = new Eq("","","");
+				listDest.add(eq);
+				
+				eq.setRight(right);
+				eq.setLeft(left);
+				
+				if(addRes == null){
+					res = nouvelleFunc.addReg();
+				}else{
+					res = addRes;
+				}
+				
+				eq.setRes(res);
 			//si c'est une expression simple
 			}else{
-				res = this.compile(e.getExp1(),instr, listDest);
+				if(addRes == null){
+					res = this.compile(e.getExp1(),null, listDest);
+				//si l'adresse de resultat n'etait pas vide, on la fait transferer
+				}else{
+					res = this.compile(e.getExp1(),addRes, listDest);
+				}
 			}
 		//si c'est une expression entre parenthèses
 		}else{
-			EXPRAND exp = e.getExp();
-			/*//si l'expression est une expression composee (or, eq, and)
-			 * ...
-			*/
-			res = this.compile(exp,instr, listDest);
+			if(addRes == null){
+				res = this.compile(e.getExp(),null, listDest);
+			}else{
+				res = this.compile(e.getExp(),addRes, listDest);			
+			}
 		}
 		return res;
 	}
 	
-	private String compile(EXPRSIMPLE e,Instruction instr, ArrayList<Instruction> listDest){
+	private String compile(EXPRSIMPLE e,String addRes, ArrayList<Instruction> listDest){
 		String res="";
 		if(e.getValeur() != null){
+			//si c'est nil
 			if(e.getValeur().equals("nil")){
+				Nil instr = new Nil("");
+				listDest.add(instr);
+				instr.setRes(addRes);
 				res = "_";
 			}else{
-				res = nouvelleFunc.getVar(e.getValeur());
+				//variable simple
+				if(addRes == null){
+					res = nouvelleFunc.getVar(e.getValeur());
+				//affectation simple
+				}else{
+					Affect instr = new Affect("","");
+					listDest.add(instr);
+					instr.setRes(addRes);
+					instr.setLeft(nouvelleFunc.getVar(e.getValeur()));
+				}
 			}
-		}else if (e.getLexpr() != null){
-			res = this.compile(e.getLexpr(), instr, listDest);
-		}else if (e.getExpr() != null){
-			res = this.compile(e.getExpr(), instr, listDest);
+		//cons
+		}else if (e.getCons() != null){
+			String tmp = this.compile(e.getLexpr(), null, listDest);
+			
+			Cons cons = new Cons("","");
+			listDest.add(cons);
+			if(addRes == null){
+				res = nouvelleFunc.addReg();
+			}else{
+				res = addRes;
+			}
+			cons.setRes(res);
+			cons.setLeft(tmp);
+		//list
+		}else if (e.getList() != null){
+			String tmp = this.compile(e.getLexpr(), null, listDest);
+			Liste list = new Liste("","");
+			listDest.add(list);
+			if(addRes == null){
+				res = nouvelleFunc.addReg();
+			}else{
+				res = addRes;
+			}
+			list.setRes(res);
+			list.setLeft(tmp);
+		//hd
+		}else if (e.getHd() != null){
+			String tmp = this.compile(e.getExpr(), null, listDest);
+			Hd hd = new Hd("","");
+			listDest.add(hd);
+			if(addRes == null){
+				res = nouvelleFunc.addReg();
+			}else{
+				res = addRes;
+			}
+			hd.setRes(res);
+			hd.setLeft(tmp);
+		//hd
+		}else if (e.getTl() != null){
+			String tmp = this.compile(e.getExpr(), null, listDest);
+			Tl tl = new Tl("","");
+			listDest.add(tl);
+			if(addRes == null){
+				res = nouvelleFunc.addReg();
+			}else{
+				res = addRes;
+			}
+			tl.setRes(res);
+			tl.setLeft(tmp);
+		//sym + left expression
+		}else if (e.getSym() != null){
+			res = this.compile(e.getLexpr(), addRes, listDest);
 		}
 		return res;
 	}
 	
-	private String compile(LEXPR e,Instruction instr, ArrayList<Instruction> listDest){
-		String res = this.compile(e.getExpr(),instr, listDest);
+	//Left expression
+	private String compile(LEXPR e,String addRes, ArrayList<Instruction> listDest){
+		String res = this.compile(e.getExpr(),addRes, listDest);
 		if(e.getLexpr() != null){
-			this.compile(e.getLexpr(), instr, listDest);
+			this.compile(e.getLexpr(), null, listDest);
 		}
 		return res;
 	}
