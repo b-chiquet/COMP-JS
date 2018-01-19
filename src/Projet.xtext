@@ -83,7 +83,7 @@ EXPREQ:
 
 //simples
 EXPRSIMPLE:
-	valeur=("nil" | VARIABLE | SYMBOLE)  | 
+	nil="nil" | variable=VARIABLE | symbole=SYMBOLE  | 
 	'(' cons='cons' lexpr=LEXPR ')' | '(' list='list' lexpr=LEXPR ')' | 
 	'(' hd='hd' expr=EXPRESSION ')' | '(' tl='tl' expr=EXPRESSION ')' |
 	'(' sym=SYMBOLE lexpr=LEXPR ')'

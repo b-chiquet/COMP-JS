@@ -10,14 +10,14 @@ import java.util.HashMap;
  */
 public class funcEntry {
 	//nb de paramètres et de valeurs retournées
-	int in,out;
+	private int in,out;
 	//liste des instructions en code 3@
-	ArrayList<Instruction> code;
+	private ArrayList<Instruction> code;
 	//table des variables de la fonction
-	HashMap<String,String> tabVar;
+	private HashMap<String,String> tabVar;
 	//numéro de var
-	int numVar;
-	int numReg;
+	private int numVar;
+	private int numReg;
 	
 	public funcEntry(){
 		this.in = 0;

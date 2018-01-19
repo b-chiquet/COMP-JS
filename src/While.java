@@ -19,11 +19,6 @@ public class While extends Instruction{
 		this.left = left;
 	}
 	
-	public Instruction addCode(Instruction instr){
-		this.right.add(instr);
-		return instr;
-	}
-	
 	public ArrayList<Instruction> getCode(){
 		return this.right;
 	}

@@ -23,11 +23,6 @@ public class Foreach extends Instruction{
 		this.leftBis = leftBis;
 	}
 	
-	public Instruction addCode(Instruction instr){
-		this.right.add(instr);
-		return instr;
-	}
-	
 	public ArrayList<Instruction> getCode(){
 		return this.right;
 	}

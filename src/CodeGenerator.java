@@ -109,6 +109,14 @@ public class CodeGenerator {
 		nouvelleFunc.addVar(a.getVariable());
 		//compilation de l'expression
 		this.compile(a.getValeur(),nouvelleFunc.getVar(a.getVariable()),listDest);
+		
+		//si affectation multiple
+		int index = 0;
+		for(String var : a.getVars()){
+			nouvelleFunc.addVar(var);
+			this.compile(a.getVals().get(index),nouvelleFunc.getVar(var),listDest);
+			index++;
+		}
 	}
 
 	// Pour le type "IF_THEN"
@@ -330,24 +338,35 @@ public class CodeGenerator {
 	
 	private String compile(EXPRSIMPLE e,String addRes, ArrayList<Instruction> listDest){
 		String res="";
-		if(e.getValeur() != null){
-			//si c'est nil
-			if(e.getValeur().equals("nil")){
-				Nil instr = new Nil("");
+		//nil
+		if(e.getNil() != null){
+			Nil instr = new Nil("");
+			listDest.add(instr);
+			instr.setRes(addRes);
+			res = "_";
+		//variable
+		}else if(e.getVariable() != null){
+			//variable simple
+			if(addRes == null){
+				res = nouvelleFunc.getVar(e.getVariable());
+			//affectation simple
+			}else{
+				Affect instr = new Affect("","");
 				listDest.add(instr);
 				instr.setRes(addRes);
-				res = "_";
+				instr.setLeft(nouvelleFunc.getVar(e.getVariable()));
+			}
+		//symbole
+		}else if(e.getSymbole() != null){
+			//symbole simple
+			if(addRes == null){
+				res = symtab.getSym(e.getSymbole());
+			//affectation simple
 			}else{
-				//variable simple
-				if(addRes == null){
-					res = nouvelleFunc.getVar(e.getValeur());
-				//affectation simple
-				}else{
-					Affect instr = new Affect("","");
-					listDest.add(instr);
-					instr.setRes(addRes);
-					instr.setLeft(nouvelleFunc.getVar(e.getValeur()));
-				}
+				Affect instr = new Affect("","");
+				listDest.add(instr);
+				instr.setRes(addRes);
+				instr.setLeft(symtab.getSym(e.getSymbole()));
 			}
 		//cons
 		}else if (e.getCons() != null){

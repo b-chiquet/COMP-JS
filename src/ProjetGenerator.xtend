@@ -228,8 +228,12 @@ class ProjetGenerator extends AbstractGenerator {
 	}
 	
 	def compile(EXPRSIMPLE e){
-		if(e.valeur !== null){
-			return '''«e.valeur.toString»'''
+		if(e.nil !== null){
+			return '''«e.nil.toString»'''
+		}else if(e.variable !== null){
+			return '''«e.variable.toString»'''
+		}else if(e.symbole !== null){
+			return '''«e.symbole.toString»'''
 		}else if(e.cons !== null){
 			return '''(cons «e.lexpr.compile»)'''
 		}else if(e.list !== null){
