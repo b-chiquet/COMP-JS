@@ -49,10 +49,11 @@ class ProjetGenerator extends AbstractGenerator {
 			)
 		}*/
 
-		// Pour chaque programme
+		// Pour le programme entier
 		for (d : resource.allContents.toIterable.filter(typeof(PROGRAM))) {
-			// On génère un nouveau fichier en appliquant la fonction compile sur tous les éléments du fichier
+			//generation du code 3@
 			gen.generate(d);
+			//pretty printer
 			fsa.generateFile(
 				"file.whp",
 				d.compile

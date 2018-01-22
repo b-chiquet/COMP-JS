@@ -25,8 +25,10 @@ public class CodeGenerator {
 	
 	public void generate(PROGRAM d){
 		this.compile(d);
+		//affichage table des symboles
+		System.out.println("Table symboles : "+this.symtab.toString());
 		//affichage de la table des fonctions obtenue
-		System.out.println(this.table.toString());
+		System.out.println(this.table.toString());		
 	}
 
 	
@@ -40,7 +42,7 @@ public class CodeGenerator {
 	// Pour le type "FUNCTION"
 	private void compile(FUNCTION f) {
 		//on ajoute le nom de la fonction à la table des symboles
-		this.symtab.addSym(f.getName());
+		this.symtab.addFun(f.getName());
 		this.compile(f.getDef());
 	}
 
@@ -60,6 +62,7 @@ public class CodeGenerator {
 	private void compile(INPUTS i) {
 		nouvelleFunc.addIn();
 		nouvelleFunc.addVar(i.getInput());
+		nouvelleFunc.addCode(new Read(nouvelleFunc.getVar(i.getInput())));
 		for(INPUTS in : i.getInputs()){
 			this.compile(in);
 		}
@@ -68,6 +71,7 @@ public class CodeGenerator {
 	// Pour le type OUTPUT
 	private void compile(OUTPUTS o) {
 		nouvelleFunc.addOut();
+		nouvelleFunc.addCode(new Write(nouvelleFunc.getVar(o.getOutput())));
 		for(OUTPUTS out : o.getOutputs()){
 			this.compile(out);
 		}
@@ -340,10 +344,15 @@ public class CodeGenerator {
 		String res="";
 		//nil
 		if(e.getNil() != null){
-			Nil instr = new Nil("");
-			listDest.add(instr);
-			instr.setRes(addRes);
-			res = "_";
+			if(addRes == null){
+				res = "nil";
+			}else{
+				Nil instr = new Nil("");
+				listDest.add(instr);
+				instr.setRes(addRes);
+				res = "_";
+			}
+			
 		//variable
 		}else if(e.getVariable() != null){
 			//variable simple
@@ -369,8 +378,8 @@ public class CodeGenerator {
 				instr.setLeft(symtab.getSym(e.getSymbole()));
 			}
 		//cons
-		}else if (e.getCons() != null){
-			String tmp = this.compile(e.getLexpr(), null, listDest);
+		}else if (e.getCons() != null){			
+			ArrayList<String> x = this.compile(e.getLexpr(), null, listDest);
 			
 			Cons cons = new Cons("","");
 			listDest.add(cons);
@@ -380,10 +389,14 @@ public class CodeGenerator {
 				res = addRes;
 			}
 			cons.setRes(res);
-			cons.setLeft(tmp);
+			cons.setLeft(x.get(0));
+			if(x.size() > 0){
+				cons.setRight(x.get(1));
+			}
 		//list
 		}else if (e.getList() != null){
-			String tmp = this.compile(e.getLexpr(), null, listDest);
+			ArrayList<String> exps = this.compile(e.getLexpr(), null, listDest);
+			
 			Liste list = new Liste("","");
 			listDest.add(list);
 			if(addRes == null){
@@ -392,7 +405,10 @@ public class CodeGenerator {
 				res = addRes;
 			}
 			list.setRes(res);
-			list.setLeft(tmp);
+			list.setLeft(exps.get(0));
+			if(exps.size() > 0){
+				list.setRight(exps.get(1));
+			}
 		//hd
 		}else if (e.getHd() != null){
 			String tmp = this.compile(e.getExpr(), null, listDest);
@@ -417,18 +433,29 @@ public class CodeGenerator {
 			}
 			tl.setRes(res);
 			tl.setLeft(tmp);
-		//sym + left expression
+		//sym + left expression (appel de fonction)
 		}else if (e.getSym() != null){
-			res = this.compile(e.getLexpr(), addRes, listDest);
+			ArrayList<String> exps = this.compile(e.getLexpr(), null, listDest);
+			Call call = new Call("","");
+			listDest.add(call);
+			if(addRes == null){
+				res = nouvelleFunc.addReg();
+			}else{
+				res = addRes;
+			}
+			call.setRes(res);
+			call.setLeft(symtab.getSym(e.getSym()));
+			call.setRight(exps);
 		}
 		return res;
 	}
 	
 	//Left expression
-	private String compile(LEXPR e,String addRes, ArrayList<Instruction> listDest){
-		String res = this.compile(e.getExpr(),addRes, listDest);
+	private ArrayList<String> compile(LEXPR e,String addRes, ArrayList<Instruction> listDest){
+		ArrayList<String> res = new ArrayList<String>();
+		res.add(this.compile(e.getExpr(),addRes, listDest));
 		if(e.getLexpr() != null){
-			this.compile(e.getLexpr(), null, listDest);
+			res.addAll(this.compile(e.getLexpr(), null, listDest));
 		}
 		return res;
 	}

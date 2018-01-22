@@ -24,10 +24,14 @@ public class funcTab {
 		return this.tab.get(nom);
 	}
 	
+	public HashMap<String,funcEntry> getTab(){
+		return this.tab;
+	}
+	
 	public String toString(){
 		String res ="";
 		for (String key : this.tab.keySet()) {
-			res+="\n\n"+key+" : "+this.tab.get(key).toString();
+			res+=key+" : "+this.tab.get(key).toString()+"\n\n";
 		}
 		return res;
 	}
