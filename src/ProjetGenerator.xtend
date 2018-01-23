@@ -39,20 +39,9 @@ class ProjetGenerator extends AbstractGenerator {
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		gen = new CodeGenerator();
-		
-		// Pour toutes les fonctions du fichier
-		/*for (f : resource.allContents.toIterable.filter(typeof(FUNCTION))) {
-			// On génère un fichier pour chaque fonction présente dans le fichier
-			fsa.generateFile(
-				"components/" + f.name + ".whp",
-				f.compile	
-			)
-		}*/
 
 		// Pour le programme entier
 		for (d : resource.allContents.toIterable.filter(typeof(PROGRAM))) {
-			//generation du code 3@
-			gen.generate(d);
 			//pretty printer
 			fsa.generateFile(
 				"file.whp",
