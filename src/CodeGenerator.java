@@ -1,8 +1,31 @@
 package org.xtext.example.generator;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import org.xtext.example.projet.*;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.xtext.example.projet.AFFECT;
+import org.xtext.example.projet.COMMAND;
+import org.xtext.example.projet.COMMANDS;
+import org.xtext.example.projet.DEFINITION;
+import org.xtext.example.projet.EXPRAND;
+import org.xtext.example.projet.EXPREQ;
+import org.xtext.example.projet.EXPRESSION;
+import org.xtext.example.projet.EXPRNOT;
+import org.xtext.example.projet.EXPROR;
+import org.xtext.example.projet.EXPRSIMPLE;
+import org.xtext.example.projet.FOREACH;
+import org.xtext.example.projet.FOR_LOOP;
+import org.xtext.example.projet.FUNCTION;
+import org.xtext.example.projet.IF_THEN;
+import org.xtext.example.projet.INPUTS;
+import org.xtext.example.projet.LEXPR;
+import org.xtext.example.projet.NOP;
+import org.xtext.example.projet.OUTPUTS;
+import org.xtext.example.projet.PROGRAM;
+import org.xtext.example.projet.WHILE;
 
 public class CodeGenerator {
 	
@@ -23,12 +46,15 @@ public class CodeGenerator {
 		num=0;
 	}
 	
-	public void generate(PROGRAM d){
-		this.compile(d);
+	public void generate(Resource resource){
+
+		//generation du code 3@
+		this.compile((PROGRAM)resource.getAllContents().next());
+		
 		//affichage table des symboles
 		System.out.println("Table symboles : "+this.symtab.toString());
 		//affichage de la table des fonctions obtenue
-		System.out.println(this.table.toString());		
+		System.out.println(this.table.toString());	
 	}
 
 	
