@@ -28,6 +28,14 @@ public class funcEntry {
 		this.tabVar = new HashMap<String,String>();
 	}
 	
+	public int getIn() {
+		return in;
+	}
+
+	public int getOut() {
+		return out;
+	}
+
 	public String getVar(String key){
 		return this.tabVar.get(key);
 	}

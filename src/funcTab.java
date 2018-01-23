@@ -10,7 +10,7 @@ import java.util.Iterator;
  */
 public class funcTab {
 	//table des fonctions : hash map de clés/entrées de fonction
-	HashMap<String,funcEntry> tab;
+	private HashMap<String,funcEntry> tab;
 	
 	public funcTab(){
 		this.tab = new HashMap<String,funcEntry>();
@@ -34,5 +34,9 @@ public class funcTab {
 			res+=key+" : "+this.tab.get(key).toString()+"\n\n";
 		}
 		return res;
+	}
+	
+	public HashMap<String,funcEntry> getFunctions () {
+		return this.tab;
 	}
 }
