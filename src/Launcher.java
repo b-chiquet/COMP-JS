@@ -14,6 +14,8 @@ import org.eclipse.xtext.util.CancelIndicator;
 import org.eclipse.xtext.validation.IResourceValidator;
 import org.xtext.example.ProjetStandaloneSetupGenerated;
 import org.xtext.example.generator.CodeGenerator;
+import org.xtext.example.generator.JsGenerator;
+
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
@@ -60,7 +62,11 @@ public class Launcher {
 		CodeGenerator gen = new CodeGenerator();
 		gen.generate(resource);
 		
-		System.out.println("Code generation finished.\n");
+		System.out.println("3@ Code generation finished.\n");
+		
+		// generation JS
+		JsGenerator jsGen = new JsGenerator(gen.getFuncTab(), gen.getSymTable());
+		jsGen.translate();
 		
 		//interface web
 		/*File htmlFile = new File("C:/Users/Manu/workspace/org.xtext.example.projet/src/org/xtext/example/web_interface/index.html");
