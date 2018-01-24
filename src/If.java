@@ -29,15 +29,15 @@ public class If extends Instruction{
 	}
 
 	public String toString(){
-		res = "<IF, "+res+", "+left+", [";
+		String ret = "<IF, "+this.res+", "+left+", [";
 		for(Instruction instr : right){
-			res+=instr.toString()+",";
+			ret+=instr.toString()+",";
 		}
-		res+="], [";
+		ret+="], [";
 		for(Instruction instr : rightBis){
-			res+=instr.toString()+",";
+			ret+=instr.toString()+",";
 		}
-		res+= "]>";
-		return res;
+		ret+= "]>";
+		return ret;
 	}
 }

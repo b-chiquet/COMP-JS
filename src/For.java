@@ -10,16 +10,24 @@ public class For extends Instruction{
 		this.right = new ArrayList<Instruction>();
 	}
 	
+	public void setRes(String res){
+		this.res = res;
+	}
+	
+	public void setLeft(String left){
+		this.left = left;
+	}
+	
 	public ArrayList<Instruction> getCode(){
 		return this.right;
 	}
 
 	public String toString(){
-		res = "<FOR, "+res+", "+left+", [";
+		String ret = "<FOR, "+this.res+", "+left+", [";
 		for(Instruction instr : right){
-			res+=instr.toString()+",";
+			ret+=instr.toString()+",";
 		}
-		res+="]>";
-		return res;
+		ret+="]>";
+		return ret;
 	}
 }

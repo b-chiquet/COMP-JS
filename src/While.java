@@ -24,11 +24,11 @@ public class While extends Instruction{
 	}
 
 	public String toString(){
-		res = "<WHILE, "+res+", "+left+", [";
+		String ret = "<WHILE, "+this.res+", "+left+", [";
 		for(Instruction instr : right){
-			res+=instr.toString()+",";
+			ret+=instr.toString()+",";
 		}
-		res+="]>";
-		return res;
+		ret+="]>";
+		return ret;
 	}
 }

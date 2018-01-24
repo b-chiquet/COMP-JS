@@ -11,14 +11,6 @@ public class Foreach extends Instruction{
 		this.right = new ArrayList<Instruction>();
 	}
 	
-	public void setRes(String res){
-		this.res = res;
-	}
-	
-	public void setLeft(String left){
-		this.left = left;
-	}
-	
 	public void setLeftBis(String leftBis){
 		this.leftBis = leftBis;
 	}
@@ -28,11 +20,11 @@ public class Foreach extends Instruction{
 	}
 
 	public String toString(){
-		res = "<FOREACH, "+res+", "+left+", "+leftBis+", [";
+		String ret = "<FOREACH, "+this.res+", "+left+", "+leftBis+", [";
 		for(Instruction instr : right){
-			res+=instr.toString()+",";
+			ret+=instr.toString()+",";
 		}
-		res+="]>";
-		return res;
+		ret+="]>";
+		return ret;
 	}
 }
