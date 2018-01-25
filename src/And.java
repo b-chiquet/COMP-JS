@@ -1,7 +1,6 @@
 package org.xtext.example.generator;
 
 public class And extends Instruction{
-	String left,right;
 	
 	public And(String res, String left, String right){
 		this.res = res;

@@ -73,6 +73,9 @@ public class JsGenerator {
 	private String translateFunc(ArrayList<Instruction>  liste){
 		String res = "";
 		for ( Instruction c : liste) {
+			
+			String[] left_right = this.formatLeftRight(c);
+			
 			switch (c.getClass().getSimpleName()) {
 			case "Affect": 
 				res += "v" + c.res + " = v" + c.left + ";\n"; 
@@ -94,7 +97,17 @@ public class JsGenerator {
 				break;
 				
 			case "Cons":
-				res+= "var v"+c.res+" = new Tree(v"+c.left+",v"+c.right+");\n";
+				
+				
+				res+= "var v"+c.res+" = new Tree("+left_right[0]+","+left_right[1]+");\n";
+				break;
+				
+			case "And":
+				res += "var v"+c.res+"= "+ left_right[0] +" && " + left_right[1] +";\n";
+				break;
+				
+			case "Or":
+				res += "var v"+c.res+"= "+ left_right[0] +" || " + left_right[1] +";\n";
 				break;
 			default:
 				break;
@@ -103,6 +116,17 @@ public class JsGenerator {
 		return res;
 	}
 	
+	private String[] formatLeftRight(Instruction i) {
+		String[] res = {"v"+i.left,"v"+i.right};
+		if ( i.left == "nil") {
+			res[0] = "nil";
+		}
+		if ( i.right == "nil") {
+			res[1] = "nil";
+		}
+		
+		return res;
+	}
 	
 	private void write() {
 		try {

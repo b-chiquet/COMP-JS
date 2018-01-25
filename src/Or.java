@@ -1,7 +1,6 @@
 package org.xtext.example.generator;
 
 public class Or extends Instruction{
-	String left,right;
 	
 	public Or(String res, String left, String right){
 		this.res = res;

@@ -1,8 +1,6 @@
 package org.xtext.example.generator;
 
 public class Eq extends Instruction{
-	String res;
-	String left,right;
 	
 	public Eq(String res, String left, String right){
 		this.res = res;
