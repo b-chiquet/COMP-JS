@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.ArrayList;
 
 import org.xtext.example.projet.AFFECT;
 
@@ -40,7 +41,7 @@ public class JsGenerator {
 		for ( String f : this.functions.getTab().keySet() ) {
 			funcEntry current = this.functions.getFunc(f);
 			this.generatedCode += (f + " : { \n ");
-			this.generatedCode += "code: function (" + this.getFuncParameters(current) + ") { \n"  + this.translateFunc(current);
+			this.generatedCode += "code: function (" + this.getFuncParameters(current) + ") { \n"  + this.translateFunc(current.getCode());
 			this.generatedCode += ("}, \n");
 			this.generatedCode += ("metadata: { \n ");
 			this.generatedCode += ("in: " + current.getIn() + ",\n");
@@ -69,15 +70,32 @@ public class JsGenerator {
 	}
 	
 	
-	private String translateFunc(funcEntry func ){
+	private String translateFunc(ArrayList<Instruction>  liste){
 		String res = "";
-		for ( Instruction c : func.getCode() ) {
+		for ( Instruction c : liste) {
 			switch (c.getClass().getSimpleName()) {
 			case "Affect": 
-				
+				res += "v" + c.res + " = v" + c.left + ";\n"; 
 				break;
 			case "Write": 
 				res+= "return [v" + c.left + "]; \n";
+				break;
+			case "If":
+				If i = (If) c;
+				res+= "if (v" + i.getLeft()+") {\n";
+				res+= this.translateFunc(i.getCode());
+				res+= "} else { \n";
+				res+= this.translateFunc(i.getCodeBis());
+				res+= "}\n";
+				break;
+				
+			case "Nil":
+				res+= "var v"+c.res+" = nil;\n";
+				break;
+				
+			case "Cons":
+				res+= "var v"+c.res+" = new Tree(v"+c.left+",v"+c.right+");\n";
+				break;
 			default:
 				break;
 			}

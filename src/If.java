@@ -7,8 +7,8 @@ public class If extends Instruction{
 	private ArrayList<Instruction> right, rightBis;
 	
 	public If(String condition){
-		this.left = condition;
-		this.right = new ArrayList<Instruction>();
+		this.setLeft(condition);
+		this.setRight(new ArrayList<Instruction>());
 		this.rightBis = new ArrayList<Instruction>();
 	}
 	
@@ -21,7 +21,7 @@ public class If extends Instruction{
 	}
 	
 	public ArrayList<Instruction> getCode(){
-		return this.right;
+		return this.getRight();
 	}
 	
 	public ArrayList<Instruction> getCodeBis(){
@@ -29,8 +29,8 @@ public class If extends Instruction{
 	}
 
 	public String toString(){
-		String ret = "<IF, "+this.res+", "+left+", [";
-		for(Instruction instr : right){
+		String ret = "<IF, "+this.res+", "+getLeft()+", [";
+		for(Instruction instr : getRight()){
 			ret+=instr.toString()+",";
 		}
 		ret+="], [";
@@ -39,5 +39,17 @@ public class If extends Instruction{
 		}
 		ret+= "]>";
 		return ret;
+	}
+
+	public ArrayList<Instruction> getRight() {
+		return right;
+	}
+
+	public void setRight(ArrayList<Instruction> right) {
+		this.right = right;
+	}
+
+	public String getLeft() {
+		return left;
 	}
 }
