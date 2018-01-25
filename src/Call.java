@@ -15,6 +15,10 @@ public class Call extends Instruction{
 		this.right = list;
 	}
 	
+	public ArrayList<String> getRight() {
+		return right;
+	}
+
 	public String toString(){
 		return "<CALL, "+res+", "+left+", "+right.toString()+">";
 	}

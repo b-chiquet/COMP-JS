@@ -24,10 +24,8 @@ public class JsGenerator {
 		try {
 			this.writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("./src/org/xtext/example/gen/GENERATED.js"), ("utf-8")));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -97,18 +95,34 @@ public class JsGenerator {
 				break;
 				
 			case "Cons":
-				
-				
 				res+= "var v"+c.res+" = new Tree("+left_right[0]+","+left_right[1]+");\n";
 				break;
 				
 			case "And":
-				res += "var v"+c.res+"= "+ left_right[0] +" && " + left_right[1] +";\n";
+				res += "var v" + c.res +"= and("+ left_right[0] + "," + left_right[1] + ");\n";
 				break;
 				
 			case "Or":
-				res += "var v"+c.res+"= "+ left_right[0] +" || " + left_right[1] +";\n";
+				res += "var v" + c.res +"= or("+ left_right[0] + "," + left_right[1] + ");\n";
 				break;
+				
+			case "Call":
+				Call call = (Call) c;
+				if ( call.left == null){
+					throw new NullPointerException("Function not found.");
+				} else {
+					res += call.left+"(";
+					for (String s : call.getRight()) {
+						res += s+',';
+					}
+					res = res.substring(0, res.length()-1);
+					res+= "); \n" ;
+				}
+				break;
+			case "Eq":
+				res += "var v" + c.res +"= eq("+ left_right[0] + "," + left_right[1] + ");\n";
+				break;
+				
 			default:
 				break;
 			}
