@@ -34,3 +34,19 @@ function or (t1, t2){
 function eq (t1, t2){
 	return false;
 }
+
+function cons (t1, t2){
+	return nil;
+}
+
+function list (t1, t2){
+	return nil;
+}
+
+function hd (t){
+	return nil;
+}
+
+function tl (t){
+	return nil;
+}
