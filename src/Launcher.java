@@ -68,7 +68,7 @@ public class Launcher {
 		
 		// generation JS
 		System.out.println("JS code is being generated");
-		JsGenerator jsGen = new JsGenerator(gen.getFuncTab(), gen.getSymTable());
+		JsGenerator jsGen = new JsGenerator(gen.getFuncTab());
 		jsGen.translate();
 		System.out.println("JS code generation finished.\n");
 		

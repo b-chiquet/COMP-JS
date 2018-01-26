@@ -14,12 +14,10 @@ import org.xtext.example.projet.AFFECT;
 public class JsGenerator {
 	
 	private funcTab functions;
-	private SymTab symbols;
 	private Writer writer;
 	private String generatedCode;
-	public JsGenerator(funcTab f, SymTab s) {
+	public JsGenerator(funcTab f) {
 		this.functions = f;
-		this.symbols = s;
 		this.generatedCode = ""; // TODO: import lib ?
 		try {
 			this.writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("./src/org/xtext/example/gen/GENERATED.js"), ("utf-8")));
@@ -42,8 +40,8 @@ public class JsGenerator {
 			this.generatedCode += "code: function (" + this.getFuncParameters(current) + ") { \n"  + this.translateFunc(current.getCode());
 			this.generatedCode += ("}, \n");
 			this.generatedCode += ("metadata: { \n ");
-			this.generatedCode += ("in: " + current.getIn() + ",\n");
-			this.generatedCode += ("out: " + current.getOut() + "\n");
+			this.generatedCode += ("argsIn: " + current.getIn() + ",\n");
+			this.generatedCode += ("argsOut: " + current.getOut() + "\n");
 			this.generatedCode += ("} \n");
 			this.generatedCode += ("}, \n");
 		}
@@ -101,7 +99,7 @@ public class JsGenerator {
 			case "Cons":
 				Cons cons = (Cons) c;
 				Object[] left_c = formatArray(cons.getLeft());
-				res+= "var v"+c.res+" = new Tree("+left_c[0]+",";
+				res+= "var v"+c.res+" = cons("+left_c[0]+",";
 				if(left_c.length < 2){
 					res+="nil);\n";
 				}else if(left_c.length < 3){
@@ -109,15 +107,15 @@ public class JsGenerator {
 				}else{
 					int cpt;
 					for(cpt = 1; cpt < left_c.length-1; cpt++){
-						res+= "new Tree("+ left_c[cpt] +",";
+						res+= "cons("+ left_c[cpt] +",";
 					}
-					res+=left_c[cpt]+");\n";
+					res+=left_c[cpt]+"));\n";
 				}
 				break;
 			case "Liste":
 				Liste list  = (Liste) c;
 				Object[] left = formatArray(list.getLeft());
-				res+= "var v"+c.res+" = new Tree("+left[0]+",";
+				res+= "var v"+c.res+" = cons("+left[0]+",";
 				if(left.length < 2){
 					res+="nil);\n";
 				}else if(left.length < 3){
@@ -125,9 +123,9 @@ public class JsGenerator {
 				}else{
 					int cpt;
 					for(cpt = 1; cpt < left.length; cpt++){
-						res+= "new Tree("+ left[cpt] +",";
+						res+= "cons("+ left[cpt] +",";
 					}
-					res+="nil);\n";
+					res+="nil));\n";
 				}
 				break;
 			case "And":
@@ -155,8 +153,9 @@ public class JsGenerator {
 				res += "var v" + c.res +" = eq("+ left_right[0] + "," + left_right[1] + ");\n";
 				break;
 			case "For":
+				For f =(For)c;
 				res+="for (i = 0; i < countIt("+formatString(c.left)+",0); i++){\n";
-				//TO DO
+				res+=this.translateFunc(f.getCode());
 				res+="}\n";
 				break;
 			default:
