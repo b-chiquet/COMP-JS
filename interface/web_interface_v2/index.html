@@ -283,14 +283,12 @@
 	var codeInput = document.getElementById('input-area');
 	
 	// 0°) Code par défaut
-	input = `
-	function func:
-		read X, Y;
-		%
-		X := Y;
-		%
-		write X;
-	`;
+	input = `function func:
+	read X, Y;
+	%
+	X := Y
+	%
+	write X;`;
 	
 	
 	// 1°) Test de la fonction eval (appel de la fonction hello dynamiquement créée)

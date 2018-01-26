@@ -37,7 +37,7 @@ public class JsGenerator {
 		for ( String f : this.functions.getTab().keySet() ) {
 			funcEntry current = this.functions.getFunc(f);
 			this.generatedCode += (f + " : { \n ");
-			this.generatedCode += "code: function (" + this.getFuncParameters(current) + ") { \n"  + this.translateFunc(current.getCode());
+			this.generatedCode += "code: function (" + this.getFuncParameters(current) + ") { \n"  + this.translateFunc(current.getCode(), true);
 			this.generatedCode += ("}, \n");
 			this.generatedCode += ("metadata: { \n ");
 			this.generatedCode += ("argsIn: " + current.getIn() + ",\n");
@@ -66,8 +66,9 @@ public class JsGenerator {
 	}
 	
 	
-	private String translateFunc(ArrayList<Instruction>  liste){
+	private String translateFunc(ArrayList<Instruction>  liste, boolean princ){
 		String res = "";
+		ArrayList<String> write_params = new ArrayList<String>();
 		for ( Instruction c : liste) {
 			
 			String[] left_right = this.formatLeftRight(c);
@@ -76,19 +77,20 @@ public class JsGenerator {
 			case "Affect": 
 				res += "v" + c.res + " = v" + c.left + ";\n"; 
 				break;
-			case "Write": 
-				res+= "return [v" + c.left + "]; \n";
+			case "Write":
+				write_params.add(c.left);
+				//res+= "return [v" + c.left + "]; \n";
 				break;
 			case "If":
 				If i = (If) c;
-				if ( i.getLeft() == "nil") {
+				if ( formatString(i.getLeft()) == "nil") {
 					res+= "if (nil) {\n";
 				}else{
-					res+= "if ("+i.getLeft()+") {\n";
+					res+= "if ("+formatString(i.getLeft())+") {\n";
 				}				
-				res+= this.translateFunc(i.getCode());
+				res+= this.translateFunc(i.getCode(), false);
 				res+= "} else { \n";
-				res+= this.translateFunc(i.getCodeBis());
+				res+= this.translateFunc(i.getCodeBis(), false);
 				res+= "}\n";
 				break;
 				
@@ -143,7 +145,7 @@ public class JsGenerator {
 				} else {
 					res += call.left+"(";
 					for (String s : call.getRight()) {
-						res += s+',';
+						res += formatString(s)+',';
 					}
 					res = res.substring(0, res.length()-1);
 					res+= "); \n" ;
@@ -155,13 +157,24 @@ public class JsGenerator {
 			case "For":
 				For f =(For)c;
 				res+="for (i = 0; i < countIt("+formatString(c.left)+",0); i++){\n";
-				res+=this.translateFunc(f.getCode());
+				res+=this.translateFunc(f.getCode(), false);
 				res+="}\n";
 				break;
 			default:
 				break;
 			}
 		}
+		
+		if(princ) {
+			res += "return [";
+			for( String s : write_params){
+				res += formatString(s)+",";
+			}
+			res = res.substring(0, res.length()-1);
+			res += "];\n";
+		}
+		
+		
 		return res;
 	}
 	

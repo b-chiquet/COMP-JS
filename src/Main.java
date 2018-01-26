@@ -118,5 +118,17 @@ public class Main {
 		generator.generate(resource, fileAccess, context);
 
 		System.out.println("Pretty-printing finished.");
+		
+		// Start 3@ code generation
+		System.out.println("3@ code is being generated");
+		CodeGenerator gen = new CodeGenerator();
+		gen.generate(resource);
+		System.out.println("3@ code generation finished.\n");
+		
+		// generation JS
+		System.out.println("JS code is being generated");
+		JsGenerator jsGen = new JsGenerator(gen.getFuncTab());
+		jsGen.translate();
+		System.out.println("JS code generation finished.\n");
 	}
 }
