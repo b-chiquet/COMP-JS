@@ -40,6 +40,11 @@ public class Launcher {
 		main.run();
 	}
 	
+	/**
+	 * Run the generation of a pretty printed .whc file, a 3@ code and a JS file
+	 * .whc file and .js file are generated in /gen directory
+	 * 3@ code is printed in the console
+	 */
 	protected void run(){
 		// Load the resource
 		ResourceSet set = resourceSetProvider.get();
@@ -53,23 +58,22 @@ public class Launcher {
 		GeneratorContext context = new GeneratorContext();
 		context.setCancelIndicator(CancelIndicator.NullImpl);
 		generator.generate(resource, fileAccess, context);
-		
 		System.out.println("Pretty-printing finished.\n");
 		
 		// Start 3@ code generation
 		System.out.println("3@ code is being generated");
-		
 		CodeGenerator gen = new CodeGenerator();
 		gen.generate(resource);
-		
-		System.out.println("3@ Code generation finished.\n");
+		System.out.println("3@ code generation finished.\n");
 		
 		// generation JS
+		System.out.println("JS code is being generated");
 		JsGenerator jsGen = new JsGenerator(gen.getFuncTab(), gen.getSymTable());
 		jsGen.translate();
+		System.out.println("JS code generation finished.\n");
 		
 		//interface web
-		/*File htmlFile = new File("C:/Users/Manu/workspace/org.xtext.example.projet/src/org/xtext/example/web_interface/index.html");
+		/*File htmlFile = new File("src/org/xtext/example/web_interface/index.html");
 		try {
 			Desktop.getDesktop().browse(htmlFile.toURI());
 		} catch (IOException e) {

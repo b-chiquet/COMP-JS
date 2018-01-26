@@ -83,7 +83,11 @@ public class JsGenerator {
 				break;
 			case "If":
 				If i = (If) c;
-				res+= "if (v" + i.getLeft()+") {\n";
+				if ( i.getLeft() == "nil") {
+					res+= "if (nil) {\n";
+				}else{
+					res+= "if ("+i.getLeft()+") {\n";
+				}				
 				res+= this.translateFunc(i.getCode());
 				res+= "} else { \n";
 				res+= this.translateFunc(i.getCodeBis());
@@ -95,15 +99,43 @@ public class JsGenerator {
 				break;
 				
 			case "Cons":
-				res+= "var v"+c.res+" = new Tree("+left_right[0]+","+left_right[1]+");\n";
+				Cons cons = (Cons) c;
+				Object[] left_c = formatArray(cons.getLeft());
+				res+= "var v"+c.res+" = new Tree("+left_c[0]+",";
+				if(left_c.length < 2){
+					res+="nil);\n";
+				}else if(left_c.length < 3){
+					res+= left_c[1]+");\n";
+				}else{
+					int cpt;
+					for(cpt = 1; cpt < left_c.length-1; cpt++){
+						res+= "new Tree("+ left_c[cpt] +",";
+					}
+					res+=left_c[cpt]+");\n";
+				}
 				break;
-				
+			case "Liste":
+				Liste list  = (Liste) c;
+				Object[] left = formatArray(list.getLeft());
+				res+= "var v"+c.res+" = new Tree("+left[0]+",";
+				if(left.length < 2){
+					res+="nil);\n";
+				}else if(left.length < 3){
+					res+= left[1]+");\n";
+				}else{
+					int cpt;
+					for(cpt = 1; cpt < left.length; cpt++){
+						res+= "new Tree("+ left[cpt] +",";
+					}
+					res+="nil);\n";
+				}
+				break;
 			case "And":
-				res += "var v" + c.res +"= and("+ left_right[0] + "," + left_right[1] + ");\n";
+				res += "var v" + c.res +" = and("+ left_right[0] + "," + left_right[1] + ");\n";
 				break;
 				
 			case "Or":
-				res += "var v" + c.res +"= or("+ left_right[0] + "," + left_right[1] + ");\n";
+				res += "var v" + c.res +" = or("+ left_right[0] + "," + left_right[1] + ");\n";
 				break;
 				
 			case "Call":
@@ -120,9 +152,13 @@ public class JsGenerator {
 				}
 				break;
 			case "Eq":
-				res += "var v" + c.res +"= eq("+ left_right[0] + "," + left_right[1] + ");\n";
+				res += "var v" + c.res +" = eq("+ left_right[0] + "," + left_right[1] + ");\n";
 				break;
-				
+			case "For":
+				res+="for (i = 0; i < countIt("+formatString(c.left)+",0); i++){\n";
+				//TO DO
+				res+="}\n";
+				break;
 			default:
 				break;
 			}
@@ -139,6 +175,24 @@ public class JsGenerator {
 			res[1] = "nil";
 		}
 		
+		return res;
+	}
+	private Object[] formatArray(Object[] l) {
+		Object[] res = l;
+		for(int i=0;i<res.length;i++){
+			if ( res[i] == "nil") {
+				res[i] = "nil";
+			}else{
+				res[i] = "v"+res[i];
+			}
+		}
+		return res;
+	}
+	private String formatString(String s) {
+		String res = s;
+			if ( s != "nil") {
+				res = "v"+res;
+			}
 		return res;
 	}
 	

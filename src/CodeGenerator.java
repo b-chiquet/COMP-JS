@@ -17,13 +17,20 @@ public class CodeGenerator {
 	//table des symboles
 	private SymTab symtab;
 	
-	
+	/**
+	 * CodeGenerator constructor
+	 */
 	public CodeGenerator(){
 		this.table = new funcTab();
 		this.symtab = new SymTab();
 		num=0;
 	}
 	
+	/**
+	 * Generation function 
+	 * @param resource : resource that contains a while file
+	 * Fill the funcions table with function entries that contains 3@ code instructions
+	 */
 	public void generate(Resource resource){
 
 		//generation du code 3@
@@ -393,10 +400,7 @@ public class CodeGenerator {
 				res = addRes;
 			}
 			cons.setRes(res);
-			cons.setLeft(x.get(0));
-			if(x.size() > 0){
-				cons.setRight(x.get(1));
-			}
+			cons.setLeft(x);
 		//list
 		}else if (e.getList() != null){
 			ArrayList<String> exps = this.compile(e.getLexpr(), null, listDest);
@@ -409,10 +413,7 @@ public class CodeGenerator {
 				res = addRes;
 			}
 			list.setRes(res);
-			list.setLeft(exps.get(0));
-			if(exps.size() > 0){
-				list.setRight(exps.get(1));
-			}
+			list.setLeft(exps);
 		//hd
 		}else if (e.getHd() != null){
 			String tmp = this.compile(e.getExpr(), null, listDest);
@@ -464,6 +465,8 @@ public class CodeGenerator {
 		return res;
 	}
 	
+	
+	//accesseurs aux attributs de la classe
 	public funcTab getFuncTab() {
 		return this.table;
 	}

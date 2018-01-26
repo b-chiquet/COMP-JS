@@ -21,32 +21,45 @@ function Tree (l,r){
 	}
 }
 
-const nil = new Tree();
+const nil = new Tree(null,null);
 
 function and (t1, t2){
-	return nil;
+	return ((!(eq(t1.left,nil)==nil) && !(eq(t1.right,nil) == nil)) && (!(eq(t2.left,nil)==nil) && !(eq(t2.right,nil)==nil)));
 }
 
 function or (t1, t2){
-	return nil;
+	return ((!(eq(t1.left,nil)==nil) && !(eq(t1.right,nil) == nil)) || (!(eq(t2.left,nil)==nil) && !(eq(t2.right,nil)==nil)));
 }
 
 function eq (t1, t2){
-	return false;
+	return nil;
 }
 
 function cons (t1, t2){
-	return nil;
+	return new Tree(t1,t2);
 }
 
 function list (t1, t2){
-	return nil;
+	return new Tree(t1,new Tree(t2,nil));
 }
 
 function hd (t){
-	return nil;
+	if(t == nil){
+		return nil;
+	}
+	return t.left;
 }
 
 function tl (t){
-	return nil;
+	if(t == nil){
+		return nil;
+	}
+	return t.right;
+}
+
+function countIt (t, cpt){
+	if((t)==nil){
+		return cpt;
+	}
+	return countIt(tl(t), cpt+1);
 }
