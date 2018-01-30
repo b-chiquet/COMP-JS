@@ -117,7 +117,7 @@ public class JsGenerator {
 			case "Liste":
 				Liste list  = (Liste) c;
 				Object[] left = formatArray(list.getLeft());
-				res+= "var v"+c.res+" = cons("+left[0]+",";
+				res+= "var v"+c.res+" = list("+left[0]+",";
 				if(left.length < 2){
 					res+="nil);\n";
 				}else if(left.length < 3){
@@ -125,7 +125,7 @@ public class JsGenerator {
 				}else{
 					int cpt;
 					for(cpt = 1; cpt < left.length; cpt++){
-						res+= "cons("+ left[cpt] +",";
+						res+= "list("+ left[cpt] +",";
 					}
 					res+="nil));\n";
 				}
