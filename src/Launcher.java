@@ -71,14 +71,6 @@ public class Launcher {
 		JsGenerator jsGen = new JsGenerator(gen.getFuncTab());
 		jsGen.translate();
 		System.out.println("JS code generation finished.\n");
-		
-		//interface web
-		/*File htmlFile = new File("src/org/xtext/example/web_interface/index.html");
-		try {
-			Desktop.getDesktop().browse(htmlFile.toURI());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
 	}
 
 }

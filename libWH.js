@@ -1,48 +1,57 @@
 // libWH.js
 
+//type Tree correspondant à l'arbre binaire WHILE
 function Tree (l,r){
 	this.left = l;
 	this.right = r;
-	
+
 	Tree.prototype.setLeft = function(t){
 		this.left=t;
 	}
-	
+
 	Tree.prototype.setRight = function(t){
 		this.right=t;
 	}
-	
+
 	Tree.prototype.getLeft = function(){
 		return this.left;
 	}
-	
+
 	Tree.prototype.getRight = function(){
 		return this.right;
 	}
 }
 
+//constante nil
 const nil = new Tree(null,null);
 
+//opérateur and
 function and (t1, t2){
-	return ((!(eq(t1.left,nil)==nil) && !(eq(t1.right,nil) == nil)) && (!(eq(t2.left,nil)==nil) && !(eq(t2.right,nil)==nil)));
+	return (eval(t1) && eval(t2));
 }
 
+//opérateur or
 function or (t1, t2){
-	return ((!(eq(t1.left,nil)==nil) && !(eq(t1.right,nil) == nil)) || (!(eq(t2.left,nil)==nil) && !(eq(t2.right,nil)==nil)));
+	return (eval(t2) || eval(t2));
 }
 
+//comparateur
 function eq (t1, t2){
 	return nil;
 }
 
+//créé un arbre binaire, t1 est le sous-arbre de gauche, t2 est celui de droite
 function cons (t1, t2){
 	return new Tree(t1,t2);
 }
 
+//créé un arbre binaire, t1 est le sous-arbre de gauche, t2 est celui de droite
+//ajoute nil en tant que sous-arbre droit du sous-arbre droit
 function list (t1, t2){
 	return new Tree(t1,new Tree(t2,nil));
 }
 
+//accesseur au sous-arbre gauche
 function hd (t){
 	if(t == nil){
 		return nil;
@@ -50,6 +59,7 @@ function hd (t){
 	return t.left;
 }
 
+//accesseur au sous-arbre droit
 function tl (t){
 	if(t == nil){
 		return nil;
@@ -57,6 +67,12 @@ function tl (t){
 	return t.right;
 }
 
+//evalue un arbre binaire (true ou false)
+function eval(t){
+	return ((eq(t.left,nil) != nil) && (eq(t.right,nil) != nil));
+}
+
+//compte le nombre d'itération pour un for
 function countIt (t, cpt){
 	if((t)==nil){
 		return cpt;

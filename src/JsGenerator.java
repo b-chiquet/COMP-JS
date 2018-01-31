@@ -16,6 +16,7 @@ public class JsGenerator {
 	private funcTab functions;
 	private Writer writer;
 	private String generatedCode;
+	
 	public JsGenerator(funcTab f) {
 		this.functions = f;
 		this.generatedCode = ""; // TODO: import lib ?
@@ -37,7 +38,7 @@ public class JsGenerator {
 		for ( String f : this.functions.getTab().keySet() ) {
 			funcEntry current = this.functions.getFunc(f);
 			this.generatedCode += (f + " : { \n ");
-			this.generatedCode += "code: function (" + this.getFuncParameters(current) + ") { \n"  + this.translateFunc(current.getCode(), true);
+			this.generatedCode += "code: function (params) { \n"  + this.translateFunc(current.getCode(), true);
 			this.generatedCode += ("}, \n");
 			this.generatedCode += ("metadata: { \n ");
 			this.generatedCode += ("argsIn: " + current.getIn() + ",\n");
@@ -51,22 +52,20 @@ public class JsGenerator {
 	}
 	
 	private String getFuncParameters( funcEntry f) {
-		String res = "";
+		ArrayList<String> res = new ArrayList<String>();
 		int i = 0;
 		for ( Instruction c : f.getCode() ) {
 			if ( c.getClass().getSimpleName().equals("Read") ) {
-				res+="v"+i+",";
+				res.add("v"+i);
 				i++;
 			}
 		}
-		if (res.length()>0) {
-			res = res.substring(0, res.length()-1);
-		}
-		return res;
+		return res.toString();
 	}
 	
 	
 	private String translateFunc(ArrayList<Instruction>  liste, boolean princ){
+		int nbParam = 0;
 		String res = "";
 		ArrayList<String> write_params = new ArrayList<String>();
 		for ( Instruction c : liste) {
@@ -75,18 +74,21 @@ public class JsGenerator {
 			
 			switch (c.getClass().getSimpleName()) {
 			case "Affect": 
-				res += "v" + c.res + " = v" + c.left + ";\n"; 
+				res += formatString(c.res) + " = " + formatString(c.left) + ";\n"; 
+				break;
+			case "Read":
+				res+= "var "+formatString(c.left)+" = params["+nbParam+"]\n";
+				nbParam++;
 				break;
 			case "Write":
 				write_params.add(c.left);
-				//res+= "return [v" + c.left + "]; \n";
 				break;
 			case "If":
 				If i = (If) c;
 				if ( formatString(i.getLeft()) == "nil") {
-					res+= "if (nil) {\n";
+					res+= "if (eval(nil)) {\n";
 				}else{
-					res+= "if ("+formatString(i.getLeft())+") {\n";
+					res+= "if (eval("+formatString(i.getLeft())+")) {\n";
 				}				
 				res+= this.translateFunc(i.getCode(), false);
 				res+= "} else { \n";
@@ -143,12 +145,11 @@ public class JsGenerator {
 				if ( call.left == null){
 					throw new NullPointerException("Function not found.");
 				} else {
-					res += call.left+"(";
+					ArrayList<String> params = new ArrayList<String>();
 					for (String s : call.getRight()) {
-						res += formatString(s)+',';
+						params.add(formatString(s));
 					}
-					res = res.substring(0, res.length()-1);
-					res+= "); \n" ;
+					res+= formatString(call.res) +" = whileFunctions['"+call.left+ "'].code("+params.toString()+"); \n";
 				}
 				break;
 			case "Eq":

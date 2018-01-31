@@ -44,7 +44,7 @@ class ProjetGenerator extends AbstractGenerator {
 		for (d : resource.allContents.toIterable.filter(typeof(PROGRAM))) {
 			//pretty printer
 			fsa.generateFile(
-				"file.whp",
+				"GENERATED.whp",
 				d.compile
 			)
 		}
