@@ -31,4 +31,8 @@ public class While extends Instruction{
 		ret+="]>";
 		return ret;
 	}
+	
+	public String getLeft() {
+		return left;
+	}
 }

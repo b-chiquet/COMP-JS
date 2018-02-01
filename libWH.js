@@ -27,16 +27,17 @@ const nil = new Tree(null,null);
 
 //opérateur and
 function and (t1, t2){
-	return (eval(t1) && eval(t2));
+	if (eval(t1) && eval(t2)){
+		return cons(nil,nil);
+	}
+	return nil;
 }
 
 //opérateur or
 function or (t1, t2){
-	return (eval(t2) || eval(t2));
-}
-
-//comparateur
-function eq (t1, t2){
+	if (eval(t2) || eval(t2)){
+		return cons(nil,nil);
+	}
 	return nil;
 }
 
@@ -48,7 +49,16 @@ function cons (t1, t2){
 //créé un arbre binaire, t1 est le sous-arbre de gauche, t2 est celui de droite
 //ajoute nil en tant que sous-arbre droit du sous-arbre droit
 function list (t1, t2){
-	return new Tree(t1,new Tree(t2,nil));
+	return cons(t1,cons(t2,nil));
+}
+
+//comparateur
+function eq (t1, t2){
+	if(hd(t1)==hd(t2) && tl(t1)==tl(t2)){
+		return cons(nil,nil);
+	}else{
+		return nil;
+	}
 }
 
 //accesseur au sous-arbre gauche
@@ -68,13 +78,16 @@ function tl (t){
 }
 
 //evalue un arbre binaire (true ou false)
-function eval(t){
-	return ((eq(t.left,nil) != nil) && (eq(t.right,nil) != nil));
+function evalT(t){
+	if(t == nil){
+		return false;
+	}
+	return true;
 }
 
 //compte le nombre d'itération pour un for
 function countIt (t, cpt){
-	if((t)==nil){
+	if(t==nil){
 		return cpt;
 	}
 	return countIt(tl(t), cpt+1);

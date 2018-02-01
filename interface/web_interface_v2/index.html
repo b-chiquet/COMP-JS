@@ -151,10 +151,7 @@
 
       </header>
       <nav class="demo-navigation mdl-navigation mdl-color--brown-800">
-        <a class="mdl-navigation__link" href=""><i class="mdl-color-text--white-400 material-icons" role="presentation">home</i>Lien du cours</a>
-        <a class="mdl-navigation__link" href=""><i class="mdl-color-text--white-400 material-icons" role="presentation">delete</i>Réinitialiser</a>
-        <a class="mdl-navigation__link" href=""><i class="mdl-color-text--white-400 material-icons" role="presentation">bug_report</i>Signaler un bug</a>
-        <a class="mdl-navigation__link" href=""><i class="mdl-color-text--white-400 material-icons" role="presentation">code</i>Voir les sources</a>
+
         <a id="help" class="mdl-navigation__link" href="#"><i class="mdl-color-text--white-400 material-icons" role="presentation">help</i>Aide</a>
         <div class="mdl-layout-spacer"></div>
         <a class="mdl-navigation__link" href=""><i class="mdl-color-text--white-400 material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
@@ -248,14 +245,23 @@
             <!-- start functions -->
 
             <div id="test-area" style="transition-duration: 1s" class="mdl-cell mdl-cell--12-col mdl-cell--padding mdl-cell--border-bottom">
-
+              <div class="dynamic-function">
+ 								<button id="test-btn" class="mdl-button mdl-js-button mdl-color-text--red" onclick="testDynamicFnc('estPair')">...</button>
+ 								<span class="tab" id="test-text"></span><i></i>
+ 							</div>
             </div>
 
             <!-- end functions -->
             <!-- start console -->
 
-            <div id="log-area" class="mdl-cell mdl-cell--12-col mdl-color--grey-200 mdl-cell--border-bottom mdl-typography--text-left mdl-cell--padding">
-
+            <div id="log-area" class="mdl-cell mdl-cell--12-col mdl-cell--border-bottom mdl-typography--text-left mdl-cell--padding">
+              <div class="code-line">
+								<b class="code-line--number"></b>
+								<span class="code-line--content">
+                <span id="test-res" class="code-line--content code-line--content-system">
+		                ...
+								</span>
+ 							</div>
               <br/>
             </div>
 
@@ -311,11 +317,11 @@
 
 
   // 1°) Test de la fonction eval (appel de la fonction hello dynamiquement créée)
-  eval("var hello = function(){console.log('hello !')};");
+  //eval("alert('test')");
   //hello();
 
   // 2°) Test de la fonction eval avec le code JavaScript généré
-  var result = `
+  /*var result = `
   var whileFunctions = {
     estPair: {
       code: function(args){
@@ -328,7 +334,7 @@
       }
     }
   };
-  `;
+  `;*/
 
   textareaInput.style.display = 'none';
   btnCancelInput.style.display = 'none';
@@ -409,21 +415,19 @@
 
     request.onreadystatechange = function() {
       if(request.readyState == 4 && request.status == 200) {
-
         output = JSON.parse(request.responseText)["code"];
         input = JSON.parse(request.responseText)["while"];
         var err = JSON.parse(request.responseText)["err"];
         hideLoading();
-        console.log(err);
         if(err === undefined){
+          //pas d'erreur : affichage du contenu compilé
           changeOutput();
           changeInput();
           evalOutput();
         }else{
+          //erreur détectée à la compilation
           errDisplay(err);
         }
-      }else{
-
       }
     }
 
@@ -438,13 +442,12 @@
   var evalOutput = function () {
 
     eval(output);
-
+  //  console.log(output);
     //console.log(whileFunctions);
 
     var theArea = document.getElementById("test-area");
 
     while(theArea.firstChild){theArea.removeChild(theArea.firstChild);}
-
 
     var DOMfncblock, DOMbtn, DOMtab, DOMdescription, DOMdescriptiontext, desctext;
 
@@ -592,6 +595,7 @@
   }
 
   var errDisplay = function(error){
+    popupErr.scrollIntoView();
     popupErr.innerHTML = error;
     popupErr.classList.toggle("show");
     setTimeout(function () {
