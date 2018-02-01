@@ -9,8 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import org.xtext.example.projet.AFFECT;
-
 public class JsGenerator {
 	
 	private funcTab functions;
@@ -19,7 +17,7 @@ public class JsGenerator {
 	
 	public JsGenerator(funcTab f) {
 		this.functions = f;
-		this.generatedCode = ""; // TODO: import lib ?
+		this.generatedCode = "";
 		try {
 			this.writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("./src/org/xtext/example/gen/GENERATED.js"), ("utf-8")));
 		} catch (UnsupportedEncodingException e) {
@@ -29,11 +27,11 @@ public class JsGenerator {
 		}
 	}
 	
+	
 	/**
-	 * return error code : 0 if all OK, -1 if something went wrong
+	 * Translates the functions contained in the functions attribute and write the generated JS code in the file.
 	 */
-	public int translate() {
-		int res = 0;
+	public void translate() {
 		this.generatedCode += ("var whileFunctions = { \n");
 		for ( String f : this.functions.getTab().keySet() ) {
 			funcEntry current = this.functions.getFunc(f);
@@ -48,22 +46,14 @@ public class JsGenerator {
 		}
 		this.generatedCode += ("}");
 		this.write();
-		return res;
 	}
 	
-	private String getFuncParameters( funcEntry f) {
-		ArrayList<String> res = new ArrayList<String>();
-		int i = 0;
-		for ( Instruction c : f.getCode() ) {
-			if ( c.getClass().getSimpleName().equals("Read") ) {
-				res.add("v"+i);
-				i++;
-			}
-		}
-		return res.toString();
-	}
-	
-	
+	/**
+	 * Translates a function into JS
+	 * @param liste the instruction list if the function
+	 * @param princ : to know if we are in an imbricated code section or in the main code, to know when we write the "return" 
+	 * @return the generated JS Code
+	 */
 	private String translateFunc(ArrayList<Instruction>  liste, boolean princ){
 		int nbParam = 0;
 		String res = "";
@@ -179,6 +169,11 @@ public class JsGenerator {
 		return res;
 	}
 	
+	/**
+	 * Format the parameters of an instruction, depending on if it is "nil" or not
+	 * @param i the Instruction
+	 * @return an array containing the formated parameters 
+	 */
 	private String[] formatLeftRight(Instruction i) {
 		String[] res = {"v"+i.left,"v"+i.right};
 		if ( i.left == "nil") {
@@ -190,6 +185,12 @@ public class JsGenerator {
 		
 		return res;
 	}
+	
+	/**
+	 * Format an array of array of values ( ex: cons A B C D )
+	 * @param l the array
+	 * @return the formated objects
+	 */
 	private Object[] formatArray(Object[] l) {
 		Object[] res = l;
 		for(int i=0;i<res.length;i++){
@@ -201,6 +202,12 @@ public class JsGenerator {
 		}
 		return res;
 	}
+	
+	/**
+	 * Format a simple string
+	 * @param s
+	 * @return
+	 */
 	private String formatString(String s) {
 		String res = s;
 			if ( s != "nil") {
@@ -209,12 +216,15 @@ public class JsGenerator {
 		return res;
 	}
 	
+	
+	/**
+	 * writes in the file and close the writer
+	 */
 	private void write() {
 		try {
 			this.writer.write(this.generatedCode);
 			this.writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
