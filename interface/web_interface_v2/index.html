@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.yellow-deep_purple.min.css">
   <link rel="stylesheet" href="styles.css">
 
-  <script type="text/javascript" src="../libWH.js"></script>
+  <script type="text/javascript" src="./libWH.js"></script>
   <script src="https://use.fontawesome.com/b22540b48d.js"></script>
 
 
@@ -237,8 +237,12 @@
             </div>
             <div class="mdl-cell mdl-cell--9-col mdl-color-text--black mdl-cell--padding mdl-cell--border-bottom">
               <div class="mdl-typography--title mdl-typography--title--margin">Console</div>
-              <p>Interagis avec le code généré ci-dessous</p>
-              <span class="popuptext" id="popup-test">3. Test le code JavaScript ici</span>
+              <p>
+                Interagis avec le code généré ci-dessous
+              <br>
+                cons(...,...), list(...,...), hd(...), tl(...), nil
+              </p>
+              <span class="popuptext" id="popup-test">3. Test le code JavaScript via le bouton ici.</span>
             </div>
 
             <!-- end header -->
@@ -246,7 +250,7 @@
 
             <div id="test-area" style="transition-duration: 1s" class="mdl-cell mdl-cell--12-col mdl-cell--padding mdl-cell--border-bottom">
               <div class="dynamic-function">
- 								<button id="test-btn" class="mdl-button mdl-js-button mdl-color-text--red" onclick="testDynamicFnc('estPair')">...</button>
+ 								<button id="test-btn" style="background-color:#e4e4e4" class="mdl-button mdl-js-button mdl-color-text--red">...</button>
  								<span class="tab" id="test-text"></span><i></i>
  							</div>
             </div>
@@ -259,7 +263,7 @@
 								<b class="code-line--number"></b>
 								<span class="code-line--content">
                 <span id="test-res" class="code-line--content code-line--content-system">
-		                ...
+
 								</span>
  							</div>
               <br/>
@@ -288,7 +292,7 @@
 
   <script type="text/javascript">
 
-  let output, input, whileFunctions;
+  let output, input, whileFunctions, mainFunc;
 
   var btnModifyInput = document.getElementById('user-action--modify-input');
   var btnValidInput = document.getElementById('user-action--valid-input');
@@ -306,6 +310,8 @@
   var popupTest = document.getElementById("popup-test");
   var popupErr = document.getElementById("popup-error");
 
+  var btnTest = document.getElementById('test-btn');
+
 
   // 0°) Code par défaut
   input = `function func:
@@ -315,33 +321,9 @@
   %
   write X;`;
 
-
-  // 1°) Test de la fonction eval (appel de la fonction hello dynamiquement créée)
-  //eval("alert('test')");
-  //hello();
-
-  // 2°) Test de la fonction eval avec le code JavaScript généré
-  /*var result = `
-  var whileFunctions = {
-    estPair: {
-      code: function(args){
-        const res = ((args[0]%2) == 0);
-        return res;
-      },
-      metadata: {
-        argsIn: 1,
-        argsOut: 1
-      }
-    }
-  };
-  `;*/
-
   textareaInput.style.display = 'none';
   btnCancelInput.style.display = 'none';
   btnValidInput.style.display = 'none';
-
-
-
 
   var showLoading = function() {
     document.getElementById("compilation-loading").style.visibility = "visible";
@@ -395,11 +377,8 @@
   var changeInput = function() { changeArea("input-area", input); }
 
 
-
-
   var modifyCode = function(){
     // display blank textarea
-
   };
 
   // Function sending input to server and handling response
@@ -418,6 +397,7 @@
         output = JSON.parse(request.responseText)["code"];
         input = JSON.parse(request.responseText)["while"];
         var err = JSON.parse(request.responseText)["err"];
+        mainFunc = JSON.parse(request.responseText)["main"];
         hideLoading();
         if(err === undefined){
           //pas d'erreur : affichage du contenu compilé
@@ -440,10 +420,8 @@
 
   // Function giving access to the output code into the browser sandbox
   var evalOutput = function () {
-
+    //on évalue le code output pour le transformer en JS
     eval(output);
-  //  console.log(output);
-    //console.log(whileFunctions);
 
     var theArea = document.getElementById("test-area");
 
@@ -451,22 +429,20 @@
 
     var DOMfncblock, DOMbtn, DOMtab, DOMdescription, DOMdescriptiontext, desctext;
 
-    for(var k in whileFunctions) {
-      console.log(k, whileFunctions[k]);
-
       DOMfncblock = document.createElement("div");
       DOMfncblock.className = "dynamic-function";
 
       DOMbtn = document.createElement("button");
+      DOMbtn.style="background-color:#e4e4e4";
       DOMbtn.className = "mdl-button mdl-js-button mdl-color-text--red";
-      DOMbtn.onclick = function() { testDynamicFnc(k); };
-      DOMbtn.appendChild(document.createTextNode(k));
+      DOMbtn.onclick = function() { testDynamicFnc(); };
+      DOMbtn.appendChild(document.createTextNode(mainFunc));
 
       DOMtab = document.createElement("span");
       DOMtab.className = "tab";
 
       DOMdescription = document.createElement("i");
-      desctext = "Tester la fonction '" + k + "' (" + whileFunctions[k]["metadata"]["argsIn"] + " in, " + whileFunctions[k]["metadata"]["argsOut"] + " out)";
+      desctext = "Tester la fonction '" + mainFunc + "' (" + whileFunctions[mainFunc]["metadata"]["argsIn"] + " in, " + whileFunctions[mainFunc]["metadata"]["argsOut"] + " out)";
       DOMdescriptiontext = document.createTextNode(desctext);
       DOMdescription.appendChild(DOMdescriptiontext);
 
@@ -475,8 +451,6 @@
       DOMfncblock.appendChild(DOMdescription);
 
       theArea.appendChild(DOMfncblock);
-    }
-
   };
 
   var addLogEntry = function (text, isDarker){
@@ -492,7 +466,7 @@
 
     DOMtime.appendChild(document.createTextNode(time));
 
-    DOMmsg = document.createElement("span");
+    DOMmsg = document.createElement("div");
     if(isDarker){
       DOMmsg.className = "code-line--content code-line--content-system";
     } else {
@@ -508,23 +482,32 @@
 
 
   // Fonction permettant l'utilisation d'une fonction de maniere dynamique
-  var testDynamicFnc = function(fncName){
+  var testDynamicFnc = function(){
 
+    fncName = mainFunc;
+    //on doit encore évaluer le code output
     eval(output);
-
-    fncName = fncName || "estPair";
 
     // Extraction du nombre de parametres en entree
     var params = [];
+    var paramsBruts = [];
     for(var i = 0; i < whileFunctions[fncName]['metadata']['argsIn']; i ++){
-      params.push(prompt('Argument ' + i + ' ?'));
+      param = prompt('Argument ' + i + ' ?');
+      try{
+        var tmp = eval(param);
+        params.push(tmp);
+        paramsBruts.push(param);
+      }catch (e){
+        errDisplay(e.message);
+        break;
+      }
     }
 
-    addLogEntry("Function '" + fncName + "' called with params : " + params, true);
+    addLogEntry("Function '" + fncName + "' called with params : " + JSON.stringify(paramsBruts), true);
 
     // Obtention du resultat
     var results = whileFunctions[fncName].code(params);
-    addLogEntry("results : " + results, false);
+    addLogEntry("results : " + JSON.stringify(results, null, 2), false);
   };
 
 
@@ -582,7 +565,7 @@
       popupInput.classList.remove("show");
       popupOutput.classList.remove("show");
       popupTest.classList.remove("show");
-    }, 12000);
+    }, 13000);
 
   });
 

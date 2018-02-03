@@ -31,10 +31,12 @@ public class JsGenerator {
 	/**
 	 * Translates the functions contained in the functions attribute and write the generated JS code in the file.
 	 */
-	public void translate() {
+	public String translate() {
+		String mainFunction = "";
 		this.generatedCode += ("var whileFunctions = { \n");
 		for ( String f : this.functions.getTab().keySet() ) {
 			funcEntry current = this.functions.getFunc(f);
+			mainFunction = f;
 			this.generatedCode += (f + " : { \n ");
 			this.generatedCode += "code: function (params) { \n"  + this.translateFunc(current.getCode(), true);
 			this.generatedCode += ("}, \n");
@@ -46,6 +48,7 @@ public class JsGenerator {
 		}
 		this.generatedCode += ("}");
 		this.write();
+		return mainFunction;
 	}
 	
 	/**
@@ -76,14 +79,24 @@ public class JsGenerator {
 			case "If":
 				If i = (If) c;
 				if ( formatString(i.getLeft()) == "nil") {
-					res+= "if (eval(nil)) {\n";
+					res+= "if (evalT(nil)) {\n";
 				}else{
-					res+= "if (eval("+formatString(i.getLeft())+")) {\n";
+					res+= "if (evalT("+formatString(i.getLeft())+")) {\n";
 				}				
 				res+= this.translateFunc(i.getCode(), false);
 				res+= "} else { \n";
 				res+= this.translateFunc(i.getCodeBis(), false);
 				res+= "}\n";
+				break;
+			case "While":
+				While w = (While) c;
+				if ( formatString(w.getLeft()) == "nil") {
+					res+= "while (evalT(nil)) {\n";
+				}else{
+					res+= "while (evalT("+formatString(w.getLeft())+")) {\n";
+				}
+				res+=this.translateFunc(w.getCode(), false);
+				res+="}\n";
 				break;
 				
 			case "Nil":
