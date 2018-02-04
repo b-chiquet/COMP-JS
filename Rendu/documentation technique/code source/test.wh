@@ -1,0 +1,14 @@
+function func:
+  read X
+  %
+  X := (cons X nil)
+  %
+  write X
+
+
+function main:
+read X
+%
+X := (func X)
+%
+write X

@@ -3,7 +3,7 @@
 === GODBILLOT Faustine, GAUTRAIN Antoine, CHIQUET Basile, ROCHAT Nicolas, DIIARA Mame, LABRUE Gwendal, JEGO Emmanuel ===
 
 
-=== MODE D'EMPLOI ===
+=== MODE D'EMPLOI INTERFACE WEB ===
 1. Ouvrir une invite de commande
 2. Se rendre dans le répertoire où se trouve ce fichier README.txt
 3. Lancer le serveur via la commande
@@ -18,6 +18,7 @@
 		-> (list nil nil) : list(nil,nil)
 		-> (hd X) : hd(X)
 		-> (tl X) : tl(X)
+		-> (X =? Y) : eq(X,Y)
 		-> nil : nil
 	-> les résultats renvoyés sont affichés en langage JavaScript	
 		-> "left" correspond au sous-arbre gauche
