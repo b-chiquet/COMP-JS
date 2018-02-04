@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>Compilation interactive</title>
+
+  <link rel="shortcut icon" href="images/favicon.png">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.yellow-deep_purple.min.css">
+  <link rel="stylesheet" href="styles.css">
+
+  <script type="text/javascript" src="./libWH.js"></script>
+  <script src="https://use.fontawesome.com/b22540b48d.js"></script>
+
+
+  <style>
+  #view-source {
+    position: fixed;
+    display: block;
+    right: 0;
+    bottom: 0;
+    margin-right: 40px;
+    margin-bottom: 40px;
+    z-index: 900;
+  }
+
+  .mdl-cell--padding {
+    padding: 20px;
+  }
+
+  .mdl-typography--title--margin {
+    margin-left: 10px;
+  }
+
+  .mdl-cell--border-bottom {
+    border-bottom: lightgray solid 2px;
+  }
+
+
+  .code-line--content {
+    display: inline-block;
+    font-family: 'Consolas', sans-serif;
+    color: gray;
+    margin-left: 10px;
+  }
+
+  .code-line--content-system {
+    display: inline-block;
+    font-family: 'Consolas', sans-serif;
+    color: gray;
+    opacity: 0.8;
+    margin-left: 10px;
+  }
+
+  .tab {
+    display: inline-block;
+    margin-left: 20px;
+  }
+
+  .separator {
+    height: 4px; width: 200px; background-color: white; margin: auto;margin-top: 50px;margin-bottom: 75px;
+  }
+
+  .code-line--number {
+    font-family: 'Consolas', sans-serif;
+    color: gray;
+  }
+
+  .code-line--number::after {
+    content: '> ';
+  }
+
+
+
+  #compilation-loading {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+    z-index:11111;
+    color: white;
+    text-align: center;
+    padding-top: 20%;
+    visibility: hidden;
+  }
+
+  .popuptext {
+    visibility: hidden;
+    position: absolute;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    z-index: 1;
+  }
+
+  .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+
+  .show {
+    height : auto;
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+  }
+
+  .popuperror {
+    background-color: red !important;
+    width:100%;
+    margin:auto;
+  }
+
+  @-webkit-keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+
+  @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity:1 ;}
+  }
+  </style>
+</head>
+
+<body>
+  <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
+    <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
+      <div class="mdl-layout__header-row">
+        <span class="mdl-layout-title">Compilateur WHILE vers JavaScript</span>
+        <div class="mdl-layout-spacer"></div>
+      </div>
+    </header>
+    <div class="demo-drawer mdl-layout__drawer mdl-color--brown-900 mdl-color-text--blue-grey-50">
+      <header class="demo-drawer-header">
+
+      </header>
+      <nav class="demo-navigation mdl-navigation mdl-color--brown-800">
+
+        <a id="help" class="mdl-navigation__link" href="#"><i class="mdl-color-text--white-400 material-icons" role="presentation">help</i>Aide</a>
+        <div class="mdl-layout-spacer"></div>
+        <a class="mdl-navigation__link" href=""><i class="mdl-color-text--white-400 material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
+      </nav>
+    </div>
+
+    <main class="mdl-layout__content mdl-color--grey-100">
+      <div class="mdl-grid">
+
+        <div class="mdl-cell mdl-cell--6-col-desktop mdl-cell--8-col-tablet mdl-grid">
+
+          <div class="popup mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--top mdl-cell--padding mdl-grid">
+
+            <div class="mdl-cell mdl-cell--3-col mdl-color--orange mdl-color-text--white mdl-typography--text-center">
+              <div class="mdl-typography--display-3">1</div>
+            </div>
+            <div class="mdl-cell mdl-cell--9-col mdl-cell--padding mdl-cell--border-bottom">
+              <div class="mdl-typography--title mdl-typography--title--margin">Input</div>
+              <p>Ecris le programme WHILE ci-dessous</p>
+              <span class="popuptext" id="popup-input">1. Ecris ton code WHILE en cliquant sur "MODIFIER".<br>Clique sur "COMPILER" pour lancer la compilation.</span>
+            </div>
+
+            <!-- end header -->
+            <textarea id="input-textarea" style="width: 100%; min-height: 200px;"></textarea>
+            <br/>
+            <div id="input-area" style="transition-duration: 1s" class="mdl-cell mdl-cell--12-col mdl-cell--border-bottom mdl-cell--padding">
+
+            </div>
+
+            <!-- start footer -->
+
+            <div class="mdl-cell mdl-cell--12-col mdl-typography--text-right">
+              <button id="user-action--modify-input" class="mdl-button mdl-js-button">Modifier</button>
+              <div class="mdl-tooltip mdl-tooltip--large" for="user-action--modify-input">Modifier le code WHILE</div>
+              <button id="user-action--valid-input" class="mdl-button mdl-js-button">Valider</button>
+              <div class="mdl-tooltip mdl-tooltip--large" for="user-action--valid-input">Valider le contenu</div>
+              <button id="user-action--cancel-input" class="mdl-button mdl-js-button">Annuler</button>
+              <div class="mdl-tooltip mdl-tooltip--large" for="user-action--cancel-input">Annuler et revenir au code précédent</div>
+              <button id="user-action--compile" class="mdl-button mdl-js-button mdl-color-text--orange" onclick="compileOnServer()">Compiler</button>
+              <div class="mdl-tooltip mdl-tooltip--large" for="user-action--compile">Compiler le code en JavaScript fonctionnel</div>
+            </div>
+
+          </div>
+        </div>
+        <span style="" class="popuptext popuperror" id="popup-error">...</span>
+        <div class="mdl-cell mdl-cell--6-col-desktop mdl-cell--8-col-tablet mdl-grid">
+
+          <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--top mdl-cell--12-col  mdl-cell--padding mdl-grid">
+
+            <div class="mdl-cell mdl-cell--3-col mdl-color-text--white mdl-color--blue mdl-typography--text-center">
+              <div class="mdl-typography--display-3">2</div>
+            </div>
+            <div class="mdl-cell mdl-cell--9-col mdl-color-text--black mdl-cell--padding mdl-cell--border-bottom">
+              <div class="mdl-typography--title mdl-typography--title--margin">Output</div>
+              <p>Obtiens le code JavaScript correspondant ci-dessous</p>
+              <span class="popuptext" id="popup-output">2. Ton code JavaScript est compilé et affiché ici.</span>
+            </div>
+
+            <!-- end header -->
+
+            <div id="output-area" style="transition-duration: 1s" class="mdl-cell mdl-cell--12-col mdl-cell--border-bottom mdl-typography--text-left mdl-cell--padding" style="min-height: 200px;">
+
+              <br/>
+            </div>
+
+            <!-- start footer -->
+
+            <div class="mdl-cell mdl-cell--12-col mdl-typography--text-right">
+              <button id="user-action--copy" class="mdl-button mdl-js-button">Copier</button>
+              <div class="mdl-tooltip mdl-tooltip--large" for="user-action--copy">Copier le code dans le presse-papier</div>
+              <button id="user-action--export" class="mdl-button mdl-js-button mdl-color-text--blue">Sauvegarder</button>
+              <div class="mdl-tooltip mdl-tooltip--large" for="user-action--export">Exporter en tant que fichier local</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mdl-cell mdl-cell--8-col-desktop mdl-cell--2-offset mdl-cell--6-col-tablet mdl-cell--1-offset-tablet mdl-grid">
+
+          <div class="mdl-color--white  mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-cell--padding mdl-grid">
+
+            <div class="mdl-cell mdl-cell--3-col mdl-color-text--white mdl-color--red mdl-typography--text-center">
+              <div class="mdl-typography--display-3">3</div>
+            </div>
+            <div class="mdl-cell mdl-cell--9-col mdl-color-text--black mdl-cell--padding mdl-cell--border-bottom">
+              <div class="mdl-typography--title mdl-typography--title--margin">Console</div>
+              <p>
+                Interagis avec le code généré ci-dessous
+              <br>
+                cons(...,...), list(...,...), hd(...), tl(...), nil
+              </p>
+              <span class="popuptext" id="popup-test">3. Test le code JavaScript via le bouton ici.</span>
+            </div>
+
+            <!-- end header -->
+            <!-- start functions -->
+
+            <div id="test-area" style="transition-duration: 1s" class="mdl-cell mdl-cell--12-col mdl-cell--padding mdl-cell--border-bottom">
+              <div class="dynamic-function">
+ 								<button id="test-btn" style="background-color:#e4e4e4" class="mdl-button mdl-js-button mdl-color-text--red">...</button>
+ 								<span class="tab" id="test-text"></span><i></i>
+ 							</div>
+            </div>
+
+            <!-- end functions -->
+            <!-- start console -->
+
+            <div id="log-area" class="mdl-cell mdl-cell--12-col mdl-cell--border-bottom mdl-typography--text-left mdl-cell--padding">
+              <div class="code-line">
+								<b class="code-line--number"></b>
+								<span class="code-line--content">
+                <span id="test-res" class="code-line--content code-line--content-system">
+
+								</span>
+ 							</div>
+              <br/>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="compilation-loading" style="">
+
+    <i class="fa fa-spinner fa-spin fa-4x fa-fw"></i>
+    <span class="sr-only">Loading...</span>
+    <h3>Compilation processing</h3>
+    <div class="separator"></div>
+    <p>Code is sent to an instance of a local Java server</p>
+    <p>Which is responsible for returning the JavaScript version of the While code provided</p>
+    <p>The more complex your code is and the longer it will last</p>
+
+  </div>
+
+  <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+  <script type="text/javascript">
+
+  let output, input, whileFunctions, mainFunc;
+
+  var btnModifyInput = document.getElementById('user-action--modify-input');
+  var btnValidInput = document.getElementById('user-action--valid-input');
+  var btnCancelInput = document.getElementById('user-action--cancel-input');
+  var textareaInput = document.getElementById('input-textarea');
+
+  var codeInput = document.getElementById('input-area');
+  var codeOutput = document.getElementById('output-area');
+  var codeTest = document.getElementById('test-area');
+
+  var btnAide = document.getElementById('help');
+
+  var popupInput = document.getElementById("popup-input");
+  var popupOutput = document.getElementById("popup-output");
+  var popupTest = document.getElementById("popup-test");
+  var popupErr = document.getElementById("popup-error");
+
+  var btnTest = document.getElementById('test-btn');
+
+
+  // 0°) Code par défaut
+  input = `function func:
+  read X, Y
+  %
+  X := Y
+  %
+  write X`;
+
+  textareaInput.style.display = 'none';
+  btnCancelInput.style.display = 'none';
+  btnValidInput.style.display = 'none';
+
+  var showLoading = function() {
+    document.getElementById("compilation-loading").style.visibility = "visible";
+  };
+
+  var hideLoading = function() {
+    document.getElementById("compilation-loading").style.visibility = "hidden";
+  };
+
+  var changeArea = function(area, data) {
+    var theArea = document.getElementById(area);
+
+    while(theArea.firstChild){theArea.removeChild(theArea.firstChild);}
+
+    var tabs = [];
+    var code = data.split("\n");
+    var line = "";
+    var DOMcodeline, DOMcodelinenumber, DOMcodelinecontent, DOMtab;
+
+    for(var i = 0; i < code.length; i++){
+
+      DOMcodeline = document.createElement("div");
+      DOMcodeline.className = "code-line";
+
+      DOMcodelinenumber = document.createElement("b");
+      DOMcodelinenumber.className = "code-line--number";
+      DOMcodelinenumber.appendChild(document.createTextNode(i+1));
+
+
+      DOMcodelinecontent = document.createElement("span");
+      DOMcodelinecontent.className = "code-line--content";
+
+      tabs = code[i].split("\t");
+      for(var j = 1; j < tabs.length; j++){
+        DOMtab = document.createElement("span");
+        DOMtab.className = "tab";
+        DOMcodelinecontent.appendChild(DOMtab);
+      }
+      line = tabs[tabs.length-1];
+      DOMcodelinecontent.appendChild(document.createTextNode(line));
+
+      DOMcodeline.appendChild(DOMcodelinenumber);
+      DOMcodeline.appendChild(DOMcodelinecontent);
+
+      theArea.appendChild(DOMcodeline);
+    }
+
+  };
+
+  var changeOutput = function() { changeArea("output-area", output); }
+  var changeInput = function() { changeArea("input-area", input); }
+
+
+  var modifyCode = function(){
+    // display blank textarea
+  };
+
+  // Function sending input to server and handling response
+  var compileOnServer = function(){
+
+    var formData = new FormData();
+    formData.append("code", input);
+    var request = new XMLHttpRequest();
+    request.open("POST", "http://localhost:3333", true);
+    request.setRequestHeader("Content-Type", "multipart/form-data");
+
+    showLoading();
+
+    request.onreadystatechange = function() {
+      if(request.readyState == 4 && request.status == 200) {
+        output = JSON.parse(request.responseText)["code"];
+        input = JSON.parse(request.responseText)["while"];
+        var err = JSON.parse(request.responseText)["err"];
+        mainFunc = JSON.parse(request.responseText)["main"];
+        hideLoading();
+        if(err === undefined){
+          //pas d'erreur : affichage du contenu compilé
+          changeOutput();
+          changeInput();
+          evalOutput();
+        }else{
+          //erreur détectée à la compilation
+          errDisplay(err);
+        }
+      }
+    }
+
+    request.send(formData);
+
+  };
+
+
+
+
+  // Function giving access to the output code into the browser sandbox
+  var evalOutput = function () {
+    //on évalue le code output pour le transformer en JS
+    eval(output);
+
+    var theArea = document.getElementById("test-area");
+
+    while(theArea.firstChild){theArea.removeChild(theArea.firstChild);}
+
+    var DOMfncblock, DOMbtn, DOMtab, DOMdescription, DOMdescriptiontext, desctext;
+
+      DOMfncblock = document.createElement("div");
+      DOMfncblock.className = "dynamic-function";
+
+      DOMbtn = document.createElement("button");
+      DOMbtn.style="background-color:#e4e4e4";
+      DOMbtn.className = "mdl-button mdl-js-button mdl-color-text--red";
+      DOMbtn.onclick = function() { testDynamicFnc(); };
+      DOMbtn.appendChild(document.createTextNode(mainFunc));
+
+      DOMtab = document.createElement("span");
+      DOMtab.className = "tab";
+
+      DOMdescription = document.createElement("i");
+      desctext = "Tester la fonction '" + mainFunc + "' (" + whileFunctions[mainFunc]["metadata"]["argsIn"] + " in, " + whileFunctions[mainFunc]["metadata"]["argsOut"] + " out)";
+      DOMdescriptiontext = document.createTextNode(desctext);
+      DOMdescription.appendChild(DOMdescriptiontext);
+
+      DOMfncblock.appendChild(DOMbtn);
+      DOMfncblock.appendChild(DOMtab);
+      DOMfncblock.appendChild(DOMdescription);
+
+      theArea.appendChild(DOMfncblock);
+  };
+
+  var addLogEntry = function (text, isDarker){
+    var theArea = document.getElementById('log-area');
+
+    var DOMentry = document.createElement("div");
+    DOMentry.className = "code-line";
+    var DOMtime = document.createElement("b");
+    DOMtime.className = "code-line--number";
+
+    var d = new Date();
+    var time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds();
+
+    DOMtime.appendChild(document.createTextNode(time));
+
+    DOMmsg = document.createElement("div");
+    if(isDarker){
+      DOMmsg.className = "code-line--content code-line--content-system";
+    } else {
+      DOMmsg.className = "code-line--content";
+    }
+    DOMmsg.appendChild(document.createTextNode(text));
+
+    DOMentry.appendChild(DOMtime);
+    DOMentry.appendChild(DOMmsg);
+    theArea.append(DOMentry);
+
+  }
+
+
+  // Fonction permettant l'utilisation d'une fonction de maniere dynamique
+  var testDynamicFnc = function(){
+
+    fncName = mainFunc;
+    //on doit encore évaluer le code output
+    eval(output);
+
+    // Extraction du nombre de parametres en entree
+    var params = [];
+    var paramsBruts = [];
+    for(var i = 0; i < whileFunctions[fncName]['metadata']['argsIn']; i ++){
+      param = prompt('Argument ' + i + ' ?');
+      try{
+        var tmp = eval(param);
+        params.push(tmp);
+        paramsBruts.push(param);
+      }catch (e){
+        errDisplay(e.message);
+        break;
+      }
+    }
+
+    addLogEntry("Function '" + fncName + "' called with params : " + JSON.stringify(paramsBruts), true);
+
+    // Obtention du resultat
+    var results = whileFunctions[fncName].code(params);
+    addLogEntry("results : " + JSON.stringify(results, null, 2), false);
+  };
+
+
+  changeArea("input-area", input);
+
+  </script>
+  <script type="text/javascript">
+  btnModifyInput.addEventListener('click', function(){
+
+    textareaInput.value = input;
+
+    btnCancelInput.style.display = 'inline-block';
+    btnValidInput.style.display = 'inline-block';
+    textareaInput.style.display = 'inline-block';
+
+    codeInput.style.display = 'none';
+    btnModifyInput.style.display = 'none';
+  });
+
+  btnValidInput.addEventListener('click', function(){
+
+    input = textareaInput.value;
+    changeArea('input-area', input);
+
+    btnCancelInput.style.display = 'none';
+    btnValidInput.style.display = 'none';
+    textareaInput.style.display = 'none';
+
+    codeInput.style.display = 'block';
+    btnModifyInput.style.display = 'inline-block';
+
+
+  });
+
+  btnCancelInput.addEventListener('click', function(){
+    btnCancelInput.style.display = 'none';
+    btnValidInput.style.display = 'none';
+    textareaInput.style.display = 'none';
+
+    btnModifyInput.style.display = 'inline-block';
+    codeInput.style.display = 'block';
+  });
+
+  btnAide.addEventListener('click', function(){
+    setTimeout(function () {
+      helpDisplay(codeInput,popupInput);
+    }, 000);
+    setTimeout(function () {
+      helpDisplay(codeOutput,popupOutput);
+    }, 4000);
+    setTimeout(function () {
+      helpDisplay(codeTest,popupTest);
+    }, 8000);
+    setTimeout(function () {
+      popupInput.classList.remove("show");
+      popupOutput.classList.remove("show");
+      popupTest.classList.remove("show");
+    }, 13000);
+
+  });
+
+  var helpDisplay = function(div,popup){
+    div.style.backgroundColor = '#f4433687';
+    popup.classList.toggle("show");
+    setTimeout(function () {
+      div.style.backgroundColor = 'white';
+    }, 2000);
+  }
+
+  var errDisplay = function(error){
+    popupErr.scrollIntoView();
+    popupErr.innerHTML = error;
+    popupErr.classList.toggle("show");
+    setTimeout(function () {
+      popupErr.classList.remove("show");
+    }, 8000);
+  }
+
+  </script>
+</body>
+</html>
