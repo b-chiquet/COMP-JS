@@ -7,7 +7,7 @@
 1. Ouvrir une invite de commande
 2. Se rendre dans le répertoire où se trouve ce fichier README.txt
 3. Lancer le serveur via la commande
-	java -jar ./server.jar
+	java -jar server.jar
 4. Ouvrir l'interface d'utilisation (index.html)
 5. Modifier le code WHILE en cliquant sur "MODIFIER" (un programme simple est saisi par défaut)
 6. Cliquer sur "VALIDER" pour confirmer les modifications apportées au programme
